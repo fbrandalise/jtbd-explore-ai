@@ -97,12 +97,20 @@ const Index = () => {
                 <p className="text-muted-foreground">Análise de Jobs to Be Done para vendedores em marketplaces</p>
               </div>
             </div>
-            <Button asChild className="gap-2">
-              <Link to="/analysis">
-                <BarChart3 className="h-4 w-4" />
-                Análise ODI
-              </Link>
-            </Button>
+            <div className="flex gap-2">
+              <Button asChild className="gap-2">
+                <Link to="/analysis">
+                  <BarChart3 className="h-4 w-4" />
+                  Análise ODI
+                </Link>
+              </Button>
+              <Button variant="outline" asChild className="gap-2">
+                <Link to="/analytics">
+                  <TrendingUp className="h-4 w-4" />
+                  Analytics
+                </Link>
+              </Button>
+            </div>
           </div>
           
           <Breadcrumb items={getBreadcrumbItems()} />
