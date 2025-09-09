@@ -8,7 +8,9 @@ import { OutcomeTable } from '../components/OutcomeTable';
 import { Breadcrumb } from '../components/Breadcrumb';
 import { Card, CardContent, CardHeader, CardTitle } from '../components/ui/card';
 import { Badge } from '../components/ui/badge';
-import { ShoppingCart, TrendingUp, Target, Award } from 'lucide-react';
+import { Button } from '../components/ui/button';
+import { ShoppingCart, TrendingUp, Target, Award, BarChart3 } from 'lucide-react';
+import { Link } from 'react-router-dom';
 
 type NavigationState = {
   level: 'bigJobs' | 'littleJobs' | 'outcomes';
@@ -87,12 +89,20 @@ const Index = () => {
       {/* Header */}
       <header className="border-b bg-card/50 backdrop-blur-sm sticky top-0 z-50">
         <div className="container mx-auto px-4 py-4">
-          <div className="flex items-center gap-3 mb-4">
-            <ShoppingCart className="h-8 w-8 text-primary" />
-            <div>
-              <h1 className="text-2xl font-bold">JTBD Marketplace Explorer</h1>
-              <p className="text-muted-foreground">Análise de Jobs to Be Done para vendedores em marketplaces</p>
+          <div className="flex items-center justify-between mb-4">
+            <div className="flex items-center gap-3">
+              <ShoppingCart className="h-8 w-8 text-primary" />
+              <div>
+                <h1 className="text-2xl font-bold">JTBD Marketplace Explorer</h1>
+                <p className="text-muted-foreground">Análise de Jobs to Be Done para vendedores em marketplaces</p>
+              </div>
             </div>
+            <Button asChild className="gap-2">
+              <Link to="/analysis">
+                <BarChart3 className="h-4 w-4" />
+                Análise ODI
+              </Link>
+            </Button>
           </div>
           
           <Breadcrumb items={getBreadcrumbItems()} />

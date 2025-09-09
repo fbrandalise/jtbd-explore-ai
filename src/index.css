@@ -51,6 +51,7 @@ All colors MUST be HSL.
     --gradient-primary: linear-gradient(135deg, hsl(217 91% 60%), hsl(217 91% 45%));
     --gradient-card: linear-gradient(135deg, hsl(0 0% 100%), hsl(220 13% 97%));
     --gradient-opportunity: linear-gradient(135deg, hsl(217 91% 60%), hsl(142 76% 36%));
+    --gradient-subtle: linear-gradient(180deg, hsl(220 15% 98%), hsl(220 13% 95%));
 
     --radius: 0.5rem;
 
