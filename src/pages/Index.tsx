@@ -9,7 +9,7 @@ import { Breadcrumb } from '../components/Breadcrumb';
 import { Card, CardContent, CardHeader, CardTitle } from '../components/ui/card';
 import { Badge } from '../components/ui/badge';
 import { Button } from '../components/ui/button';
-import { ShoppingCart, TrendingUp, Target, Award, BarChart3 } from 'lucide-react';
+import { ShoppingCart, TrendingUp, Target, Award, BarChart3, Route } from 'lucide-react';
 import { Link } from 'react-router-dom';
 
 type NavigationState = {
@@ -108,6 +108,12 @@ const Index = () => {
                 <Link to="/analytics">
                   <TrendingUp className="h-4 w-4" />
                   Analytics
+                </Link>
+              </Button>
+              <Button variant="outline" asChild className="gap-2">
+                <Link to="/journey">
+                  <Route className="h-4 w-4" />
+                  Jornada
                 </Link>
               </Button>
             </div>
