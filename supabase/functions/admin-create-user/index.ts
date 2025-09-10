@@ -72,7 +72,7 @@ serve(async (req) => {
     }
 
     // Verify current user is admin of this org
-    const { data: membership } = await supabase
+    const { data: membership } = await supabaseAdmin
       .from('org_members')
       .select('role')
       .eq('org_id', org.id)
@@ -96,7 +96,7 @@ serve(async (req) => {
     if (existingUser.users && existingUser.users.length > 0) {
       // User exists, check if already member of org
       const existingUserData = existingUser.users[0];
-      const { data: existingMembership } = await supabase
+      const { data: existingMembership } = await supabaseAdmin
         .from('org_members')
         .select('*')
         .eq('org_id', org.id)
@@ -130,7 +130,7 @@ serve(async (req) => {
     }
 
     // Add user to organization
-    const { error: memberError } = await supabase
+    const { error: memberError } = await supabaseAdmin
       .from('org_members')
       .insert({
         org_id: org.id,
@@ -147,7 +147,7 @@ serve(async (req) => {
     }
 
     // Log the action
-    await supabase
+    await supabaseAdmin
       .from('change_logs')
       .insert({
         entity: 'org_member',
