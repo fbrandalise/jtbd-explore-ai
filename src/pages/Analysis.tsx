@@ -305,6 +305,7 @@ const Analysis = () => {
                         name="Importância"
                         domain={[0, 10]}
                         tickCount={6}
+                        label={{ value: 'Importância', position: 'insideBottom', offset: -10 }}
                       />
                       <YAxis 
                         type="number" 
@@ -312,6 +313,7 @@ const Analysis = () => {
                         name="Satisfação"
                         domain={[0, 10]}
                         tickCount={6}
+                        label={{ value: 'Satisfação', angle: -90, position: 'insideLeft' }}
                       />
                       
                       {/* Reference Lines for Zones */}
