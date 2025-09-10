@@ -364,7 +364,7 @@ const Analysis = () => {
                   <div 
                     className="absolute top-5 left-16 right-5 bottom-10 pointer-events-none"
                     style={{
-                      background: 'linear-gradient(135deg, rgba(34, 197, 94, 0.08) 50%, transparent 50%)',
+                      background: 'linear-gradient(135deg, rgba(34, 197, 94, 0.08) 100%, transparent 0%)',
                       clipPath: 'polygon(0% 0%, 100% 0%, 0% 100%)'
                     }}
                   />
@@ -373,7 +373,7 @@ const Analysis = () => {
                   <div className="absolute bottom-20 right-8 text-xs text-red-500/70 font-medium pointer-events-none">
                     Underserved
                   </div>
-                  <div className="absolute top-8 left-20 text-xs text-green-500/70 font-medium pointer-events-none">
+                  <div className="absolute top-8 left-32 text-xs text-green-500/70 font-medium pointer-events-none">
                     Overserved
                   </div>
                 </div>
