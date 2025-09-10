@@ -56,8 +56,8 @@ serve(async (req) => {
     const { email, name, role, orgSlug }: CreateUserRequest = await req.json();
     console.log(`Admin ${user.email} creating user ${email} with role ${role} for org ${orgSlug}`);
 
-    // Get organization
-    const { data: org, error: orgError } = await supabase
+    // Get organization using admin client
+    const { data: org, error: orgError } = await supabaseAdmin
       .from('orgs')
       .select('id')
       .eq('slug', orgSlug)
