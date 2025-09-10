@@ -88,16 +88,19 @@ serve(async (req) => {
     }
 
     // Check if user already exists
-    const { data: existingUser } = await supabaseAdmin.auth.admin.getUserByEmail(email);
+    const { data: existingUser } = await supabaseAdmin.auth.admin.listUsers({
+      filter: `email.eq.${email}`
+    });
     
     let newUser;
-    if (existingUser.user) {
+    if (existingUser.users && existingUser.users.length > 0) {
       // User exists, check if already member of org
+      const existingUserData = existingUser.users[0];
       const { data: existingMembership } = await supabase
         .from('org_members')
         .select('*')
         .eq('org_id', org.id)
-        .eq('user_id', existingUser.user.id)
+        .eq('user_id', existingUserData.id)
         .single();
 
       if (existingMembership) {
@@ -107,7 +110,7 @@ serve(async (req) => {
         });
       }
 
-      newUser = existingUser.user;
+      newUser = existingUserData;
     } else {
       // Create new user with invite
       const { data: createUserData, error: createUserError } = await supabaseAdmin.auth.admin.inviteUserByEmail(email, {
@@ -167,7 +170,7 @@ serve(async (req) => {
         id: newUser.id,
         email: email,
         role: role,
-        status: existingUser.user ? 'existing' : 'invited'
+        status: (existingUser.users && existingUser.users.length > 0) ? 'existing' : 'invited'
       }
     }), {
       headers: { ...corsHeaders, 'Content-Type': 'application/json' },
