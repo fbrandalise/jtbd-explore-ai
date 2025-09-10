@@ -1,5 +1,6 @@
 import React, { useState } from 'react';
-import { Search, Plus, Save, X, FileDown, FileUp, Archive, Trash2, Edit, MoreVertical } from 'lucide-react';
+import { Search, Plus, Save, X, FileDown, FileUp, Archive, Trash2, Edit, MoreVertical, Home } from 'lucide-react';
+import { Link } from 'react-router-dom';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
 import { Textarea } from '@/components/ui/textarea';
@@ -379,6 +380,11 @@ export const Admin: React.FC = () => {
       <div className="border-b bg-card">
         <div className="flex items-center justify-between p-4">
           <div className="flex items-center gap-4">
+            <Button asChild variant="ghost" size="icon">
+              <Link to="/">
+                <Home className="h-5 w-5" />
+              </Link>
+            </Button>
             <h1 className="text-2xl font-bold">Administração JTBD</h1>
             {unsavedChanges && (
               <Badge variant="secondary" className="bg-warning text-warning-foreground">
