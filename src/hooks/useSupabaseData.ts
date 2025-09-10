@@ -4,6 +4,7 @@ import { seedDatabase, isDatabaseSeeded } from '@/lib/seedData';
 import type { SupabaseResearchRound, SupabaseJTBDData } from '@/types/supabase';
 
 export function useSupabaseData() {
+  console.log('🚀 useSupabaseData hook initialized');
   const [researchRounds, setResearchRounds] = useState<SupabaseResearchRound[]>([]);
   const [isLoading, setIsLoading] = useState(true);
   const [isSeeding, setIsSeeding] = useState(false);
@@ -49,6 +50,7 @@ export function useSupabaseData() {
   };
 
   useEffect(() => {
+    console.log('🔍 useEffect triggered in useSupabaseData');
     loadData();
   }, []);
 

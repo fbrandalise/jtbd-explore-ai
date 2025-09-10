@@ -15,16 +15,21 @@ export async function seedDatabase() {
     for (const bigJob of BASE_JOBS) {
       console.log(`Creating Big Job: ${bigJob.name}`);
       
-      const bigJobSuccess = await supabaseRepository.createBigJob({
+      try {
+        const bigJobSuccess = await supabaseRepository.createBigJob({
         slug: bigJob.id,
         name: bigJob.name,
         description: bigJob.description,
         tags: [],
         orderIndex: 0
-      });
+        });
 
-      if (!bigJobSuccess) {
-        console.warn(`Failed to create Big Job: ${bigJob.name}`);
+        if (!bigJobSuccess) {
+          console.warn(`Failed to create Big Job: ${bigJob.name}`);
+          continue;
+        }
+      } catch (error) {
+        console.error(`Error creating Big Job ${bigJob.name}:`, error);
         continue;
       }
 
