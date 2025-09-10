@@ -8,12 +8,15 @@ import Analysis from "./pages/Analysis";
 import Analytics from "./pages/Analytics";
 import Journey from "./pages/Journey";
 import Admin from "./pages/Admin";
+import Users from "./pages/admin/Users";
+import NewUser from "./pages/admin/NewUser";
 import NotFound from "./pages/NotFound";
 import Login from "./pages/auth/Login";
 import Register from "./pages/auth/Register";
 import ForgotPassword from "./pages/auth/ForgotPassword";
 import ResetPassword from "./pages/auth/ResetPassword";
 import { ProtectedRoute } from "./components/ProtectedRoute";
+import { RoleGuard } from "./components/RoleGuard";
 
 const queryClient = new QueryClient();
 
@@ -35,7 +38,27 @@ const App = () => (
           <Route path="/analysis" element={<ProtectedRoute><Analysis /></ProtectedRoute>} />
           <Route path="/analytics" element={<ProtectedRoute><Analytics /></ProtectedRoute>} />
           <Route path="/journey" element={<ProtectedRoute><Journey /></ProtectedRoute>} />
-          <Route path="/admin" element={<ProtectedRoute><Admin /></ProtectedRoute>} />
+          <Route path="/admin" element={
+            <ProtectedRoute>
+              <RoleGuard requiredRole="admin">
+                <Admin />
+              </RoleGuard>
+            </ProtectedRoute>
+          } />
+          <Route path="/admin/users" element={
+            <ProtectedRoute>
+              <RoleGuard requiredRole="admin">
+                <Users />
+              </RoleGuard>
+            </ProtectedRoute>
+          } />
+          <Route path="/admin/users/new" element={
+            <ProtectedRoute>
+              <RoleGuard requiredRole="admin">
+                <NewUser />
+              </RoleGuard>
+            </ProtectedRoute>
+          } />
           
           {/* ADD ALL CUSTOM ROUTES ABOVE THE CATCH-ALL "*" ROUTE */}
           <Route path="*" element={<NotFound />} />

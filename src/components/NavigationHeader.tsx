@@ -9,7 +9,9 @@ import {
   BarChart3,
   Settings,
   Map,
-  Database 
+  Database,
+  Users,
+  ChevronDown
 } from "lucide-react";
 import {
   DropdownMenu,
@@ -123,6 +125,7 @@ export const NavigationHeader = ({ title, subtitle }: NavigationHeaderProps) => 
                 <Button variant="ghost" size="sm" className="flex items-center space-x-2">
                   <User className="h-4 w-4" />
                   <span className="hidden sm:inline">{user?.email}</span>
+                  <ChevronDown className="h-3 w-3" />
                 </Button>
               </DropdownMenuTrigger>
               <DropdownMenuContent align="end" className="w-56">
@@ -145,6 +148,25 @@ export const NavigationHeader = ({ title, subtitle }: NavigationHeaderProps) => 
                   </div>
                 </DropdownMenuLabel>
                 <DropdownMenuSeparator />
+                
+                {profile?.role === 'admin' && (
+                  <>
+                    <DropdownMenuItem asChild>
+                      <Link to="/admin">
+                        <Settings className="h-4 w-4 mr-2" />
+                        JTBD Admin
+                      </Link>
+                    </DropdownMenuItem>
+                    <DropdownMenuItem asChild>
+                      <Link to="/admin/users">
+                        <Users className="h-4 w-4 mr-2" />
+                        Gerenciar Usuários
+                      </Link>
+                    </DropdownMenuItem>
+                    <DropdownMenuSeparator />
+                  </>
+                )}
+                
                 <DropdownMenuItem onClick={handleLogout} className="text-destructive">
                   <LogOut className="mr-2 h-4 w-4" />
                   Sair
