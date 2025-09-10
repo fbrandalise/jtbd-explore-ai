@@ -20,9 +20,7 @@ interface NavigationState {
 }
 
 const Index = () => {
-  console.log('🔄 Index component loading...');
   const { researchRounds, isLoading, isSeeding, error } = useSupabaseData();
-  console.log('📊 Hook result:', { researchRounds, isLoading, isSeeding, error });
   const [selectedResearch, setSelectedResearch] = useState<SupabaseResearchRound | null>(null);
   const [navigation, setNavigation] = useState<NavigationState>({ level: 'bigJobs' });
 

@@ -4,7 +4,6 @@ import { seedDatabase, isDatabaseSeeded } from '@/lib/seedData';
 import type { SupabaseResearchRound, SupabaseJTBDData } from '@/types/supabase';
 
 export function useSupabaseData() {
-  console.log('🚀 useSupabaseData hook initialized');
   const [researchRounds, setResearchRounds] = useState<SupabaseResearchRound[]>([]);
   const [isLoading, setIsLoading] = useState(true);
   const [isSeeding, setIsSeeding] = useState(false);
@@ -12,36 +11,14 @@ export function useSupabaseData() {
 
   const loadData = async () => {
     try {
-      console.log('🔄 Starting data load...');
       setIsLoading(true);
       setError(null);
 
-      // Check if database is seeded
-      console.log('🔍 Checking if database is seeded...');
-      const isSeeded = await isDatabaseSeeded();
-      console.log('📊 Database seeded:', isSeeded);
-      
-      if (!isSeeded) {
-        console.log('🌱 Database not seeded, starting seeding process...');
-        setIsSeeding(true);
-        const seedSuccess = await seedDatabase();
-        console.log('✅ Seed success:', seedSuccess);
-        
-        if (!seedSuccess) {
-          console.error('❌ Failed to seed database');
-          setError('Failed to seed database with initial data');
-          return;
-        }
-        setIsSeeding(false);
-      }
-
-      // Load research rounds
-      console.log('📥 Loading research rounds...');
+      // Load research rounds directly (database is already populated)
       const rounds = await supabaseRepository.getResearchRounds();
-      console.log('📊 Loaded rounds:', rounds.length, rounds);
       setResearchRounds(rounds);
     } catch (err) {
-      console.error('💥 Error loading Supabase data:', err);
+      console.error('Error loading Supabase data:', err);
       setError(err instanceof Error ? err.message : 'Unknown error occurred');
     } finally {
       setIsLoading(false);
@@ -50,7 +27,6 @@ export function useSupabaseData() {
   };
 
   useEffect(() => {
-    console.log('🔍 useEffect triggered in useSupabaseData');
     loadData();
   }, []);
 
