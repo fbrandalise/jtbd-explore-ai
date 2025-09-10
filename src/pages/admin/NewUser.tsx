@@ -77,7 +77,10 @@ export const NewUser: React.FC = () => {
         }
       });
 
-      if (error) throw error;
+      if (error) {
+        console.error('Supabase function error:', error);
+        throw error;
+      }
 
       if (result.error) {
         throw new Error(result.error);
@@ -91,21 +94,26 @@ export const NewUser: React.FC = () => {
       navigate('/admin/users');
     } catch (error: any) {
       console.error('Error creating user:', error);
+      console.error('Error type:', typeof error);
+      console.error('Error keys:', Object.keys(error));
+      console.error('Error context:', error.context);
+      console.error('Error details:', error.details);
       
       // Extract specific error message from the response
       let errorMessage = 'Ocorreu um erro inesperado';
       
-      if (error.message) {
-        errorMessage = error.message;
-      } else if (error.context?.body) {
+      // Handle FunctionsHttpError from Supabase
+      if (error.context?.body) {
         try {
           const parsedError = JSON.parse(error.context.body);
           if (parsedError.error) {
             errorMessage = parsedError.error;
           }
-        } catch {
-          // Keep default message if JSON parsing fails
+        } catch (parseError) {
+          console.error('Failed to parse error body:', parseError);
         }
+      } else if (error.message) {
+        errorMessage = error.message;
       }
       
       toast({
