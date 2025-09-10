@@ -91,9 +91,26 @@ export const NewUser: React.FC = () => {
       navigate('/admin/users');
     } catch (error: any) {
       console.error('Error creating user:', error);
+      
+      // Extract specific error message from the response
+      let errorMessage = 'Ocorreu um erro inesperado';
+      
+      if (error.message) {
+        errorMessage = error.message;
+      } else if (error.context?.body) {
+        try {
+          const parsedError = JSON.parse(error.context.body);
+          if (parsedError.error) {
+            errorMessage = parsedError.error;
+          }
+        } catch {
+          // Keep default message if JSON parsing fails
+        }
+      }
+      
       toast({
         title: 'Erro ao criar usuário',
-        description: error.message || 'Ocorreu um erro inesperado',
+        description: errorMessage,
         variant: 'destructive'
       });
     } finally {
