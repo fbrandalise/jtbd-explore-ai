@@ -71,6 +71,16 @@ class SupabaseRepository {
     return this.slugToUuidCache[type][slug] || null;
   }
 
+  private async getDefaultOrgId(): Promise<string> {
+    const { data: orgData } = await supabase
+      .from('orgs')
+      .select('id')
+      .eq('slug', 'default')
+      .single();
+    
+    return orgData?.id || '';
+  }
+
   private async logChange(
     entity: string,
     entityId: string,
@@ -78,13 +88,16 @@ class SupabaseRepository {
     before?: any,
     after?: any
   ) {
+    const orgId = await this.getDefaultOrgId();
+    
     const log: ChangeLogInsert = {
       entity: entity as any,
       entity_id: entityId,
       action: action as any,
       before: before || null,
       after: after || null,
-      actor: 'current_user' // TODO: Get from auth when implemented
+      actor: 'current_user', // TODO: Get from auth when implemented
+      org_id: orgId
     };
 
     await supabase.from('change_logs').insert(log);
@@ -176,11 +189,19 @@ class SupabaseRepository {
   }
 
   async upsertSurvey(survey: Omit<SupabaseSurvey, 'id'> & { code: string }): Promise<boolean> {
+    // Get default org ID
+    const { data: orgData } = await supabase
+      .from('orgs')
+      .select('id')
+      .eq('slug', 'default')
+      .single();
+
     const surveyData: SurveyInsert = {
       code: survey.code,
       name: survey.name,
       date: survey.date,
-      description: survey.description
+      description: survey.description,
+      org_id: orgData?.id || ''
     };
 
     const { error } = await supabase
@@ -240,12 +261,15 @@ class SupabaseRepository {
 
     const opportunityScore = result.opportunityScore || calculateOpportunityScore(result.importance, result.satisfaction);
 
+    const orgId = await this.getDefaultOrgId();
+    
     const resultData: OutcomeResultInsert = {
       survey_id: surveyId,
       outcome_id: outcomeId,
       importance: result.importance,
       satisfaction: result.satisfaction,
-      opportunity_score: opportunityScore
+      opportunity_score: opportunityScore,
+      org_id: orgId
     };
 
     const { error } = await supabase
@@ -314,12 +338,15 @@ class SupabaseRepository {
 
   // CRUD METHODS FOR BIG JOBS
   async createBigJob(payload: { slug: string; name: string; description?: string; tags?: string[]; orderIndex?: number }): Promise<boolean> {
+    const orgId = await this.getDefaultOrgId();
+    
     const bigJobData: BigJobInsert = {
       slug: payload.slug,
       name: payload.name,
       description: payload.description || null,
       tags: payload.tags || [],
-      order_index: payload.orderIndex || 0
+      order_index: payload.orderIndex || 0,
+      org_id: orgId
     };
 
     const { data, error } = await supabase
@@ -387,12 +414,15 @@ class SupabaseRepository {
     const bigJobId = this.getUuidFromSlug('bigJobs', payload.bigJobSlug);
     if (!bigJobId) return false;
 
+    const orgId = await this.getDefaultOrgId();
+
     const littleJobData: LittleJobInsert = {
       big_job_id: bigJobId,
       slug: payload.slug,
       name: payload.name,
       description: payload.description || null,
-      order_index: payload.orderIndex || 0
+      order_index: payload.orderIndex || 0,
+      org_id: orgId
     };
 
     const { data, error } = await supabase
@@ -459,13 +489,16 @@ class SupabaseRepository {
     const littleJobId = this.getUuidFromSlug('littleJobs', payload.littleJobSlug);
     if (!littleJobId) return false;
 
+    const orgId = await this.getDefaultOrgId();
+
     const outcomeData: OutcomeInsert = {
       little_job_id: littleJobId,
       slug: payload.slug,
       name: payload.name,
       description: payload.description || null,
       tags: payload.tags || [],
-      order_index: payload.orderIndex || 0
+      order_index: payload.orderIndex || 0,
+      org_id: orgId
     };
 
     const { data, error } = await supabase

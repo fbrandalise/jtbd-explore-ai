@@ -21,6 +21,7 @@ export type Database = {
           id: string
           name: string
           order_index: number | null
+          org_id: string
           slug: string
           status: string | null
           tags: string[] | null
@@ -32,6 +33,7 @@ export type Database = {
           id?: string
           name: string
           order_index?: number | null
+          org_id: string
           slug: string
           status?: string | null
           tags?: string[] | null
@@ -43,6 +45,7 @@ export type Database = {
           id?: string
           name?: string
           order_index?: number | null
+          org_id?: string
           slug?: string
           status?: string | null
           tags?: string[] | null
@@ -60,6 +63,7 @@ export type Database = {
           entity: string
           entity_id: string
           id: string
+          org_id: string
         }
         Insert: {
           action: string
@@ -70,6 +74,7 @@ export type Database = {
           entity: string
           entity_id: string
           id?: string
+          org_id: string
         }
         Update: {
           action?: string
@@ -80,6 +85,7 @@ export type Database = {
           entity?: string
           entity_id?: string
           id?: string
+          org_id?: string
         }
         Relationships: []
       }
@@ -91,6 +97,7 @@ export type Database = {
           id: string
           name: string
           order_index: number | null
+          org_id: string
           slug: string
           status: string | null
           updated_at: string | null
@@ -102,6 +109,7 @@ export type Database = {
           id?: string
           name: string
           order_index?: number | null
+          org_id: string
           slug: string
           status?: string | null
           updated_at?: string | null
@@ -113,6 +121,7 @@ export type Database = {
           id?: string
           name?: string
           order_index?: number | null
+          org_id?: string
           slug?: string
           status?: string | null
           updated_at?: string | null
@@ -127,12 +136,66 @@ export type Database = {
           },
         ]
       }
+      org_members: {
+        Row: {
+          created_at: string | null
+          id: string
+          org_id: string
+          role: string
+          user_id: string
+        }
+        Insert: {
+          created_at?: string | null
+          id?: string
+          org_id: string
+          role: string
+          user_id: string
+        }
+        Update: {
+          created_at?: string | null
+          id?: string
+          org_id?: string
+          role?: string
+          user_id?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "org_members_org_id_fkey"
+            columns: ["org_id"]
+            isOneToOne: false
+            referencedRelation: "orgs"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
+      orgs: {
+        Row: {
+          created_at: string | null
+          id: string
+          name: string
+          slug: string
+        }
+        Insert: {
+          created_at?: string | null
+          id?: string
+          name: string
+          slug: string
+        }
+        Update: {
+          created_at?: string | null
+          id?: string
+          name?: string
+          slug?: string
+        }
+        Relationships: []
+      }
       outcome_results: {
         Row: {
           created_at: string | null
           id: string
           importance: number
           opportunity_score: number
+          org_id: string
           outcome_id: string
           satisfaction: number
           survey_id: string
@@ -143,6 +206,7 @@ export type Database = {
           id?: string
           importance: number
           opportunity_score: number
+          org_id: string
           outcome_id: string
           satisfaction: number
           survey_id: string
@@ -153,6 +217,7 @@ export type Database = {
           id?: string
           importance?: number
           opportunity_score?: number
+          org_id?: string
           outcome_id?: string
           satisfaction?: number
           survey_id?: string
@@ -183,6 +248,7 @@ export type Database = {
           little_job_id: string
           name: string
           order_index: number | null
+          org_id: string
           slug: string
           status: string | null
           tags: string[] | null
@@ -195,6 +261,7 @@ export type Database = {
           little_job_id: string
           name: string
           order_index?: number | null
+          org_id: string
           slug: string
           status?: string | null
           tags?: string[] | null
@@ -207,6 +274,7 @@ export type Database = {
           little_job_id?: string
           name?: string
           order_index?: number | null
+          org_id?: string
           slug?: string
           status?: string | null
           tags?: string[] | null
@@ -230,6 +298,7 @@ export type Database = {
           description: string | null
           id: string
           name: string
+          org_id: string
           updated_at: string | null
         }
         Insert: {
@@ -239,6 +308,7 @@ export type Database = {
           description?: string | null
           id?: string
           name: string
+          org_id: string
           updated_at?: string | null
         }
         Update: {
@@ -248,6 +318,7 @@ export type Database = {
           description?: string | null
           id?: string
           name?: string
+          org_id?: string
           updated_at?: string | null
         }
         Relationships: []
@@ -272,7 +343,10 @@ export type Database = {
       }
     }
     Functions: {
-      [_ in never]: never
+      has_role: {
+        Args: { org: string; required_role: string }
+        Returns: boolean
+      }
     }
     Enums: {
       [_ in never]: never

@@ -9,6 +9,11 @@ import Analytics from "./pages/Analytics";
 import Journey from "./pages/Journey";
 import Admin from "./pages/Admin";
 import NotFound from "./pages/NotFound";
+import Login from "./pages/auth/Login";
+import Register from "./pages/auth/Register";
+import ForgotPassword from "./pages/auth/ForgotPassword";
+import ResetPassword from "./pages/auth/ResetPassword";
+import { ProtectedRoute } from "./components/ProtectedRoute";
 
 const queryClient = new QueryClient();
 
@@ -19,11 +24,19 @@ const App = () => (
       <Sonner />
       <BrowserRouter>
         <Routes>
-          <Route path="/" element={<Index />} />
-          <Route path="/analysis" element={<Analysis />} />
-          <Route path="/analytics" element={<Analytics />} />
-          <Route path="/journey" element={<Journey />} />
-          <Route path="/admin" element={<Admin />} />
+          {/* Auth routes - public */}
+          <Route path="/auth/login" element={<Login />} />
+          <Route path="/auth/register" element={<Register />} />
+          <Route path="/auth/forgot-password" element={<ForgotPassword />} />
+          <Route path="/auth/reset-password" element={<ResetPassword />} />
+          
+          {/* Protected routes */}
+          <Route path="/" element={<ProtectedRoute><Index /></ProtectedRoute>} />
+          <Route path="/analysis" element={<ProtectedRoute><Analysis /></ProtectedRoute>} />
+          <Route path="/analytics" element={<ProtectedRoute><Analytics /></ProtectedRoute>} />
+          <Route path="/journey" element={<ProtectedRoute><Journey /></ProtectedRoute>} />
+          <Route path="/admin" element={<ProtectedRoute><Admin /></ProtectedRoute>} />
+          
           {/* ADD ALL CUSTOM ROUTES ABOVE THE CATCH-ALL "*" ROUTE */}
           <Route path="*" element={<NotFound />} />
         </Routes>
