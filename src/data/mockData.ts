@@ -373,6 +373,9 @@ function withScores(baseJobs: any[], scores: Record<string, { importance: number
   }));
 }
 
+// === Exports for seeding ===
+export { BASE_JOBS, ROUNDS_META };
+
 // === Montagem final ===
 export const mockResearchRounds: ResearchRound[] = ROUNDS_META.map(r => {
   const scores = buildRoundScores(r.id, BASELINE_SCORES, ROUND_VARIATION, OVERRIDE_SCORES);

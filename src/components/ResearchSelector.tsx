@@ -1,17 +1,15 @@
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from './ui/select';
 import { Card, CardContent, CardHeader, CardTitle } from './ui/card';
-import { ResearchRound } from '../types/jtbd';
+import { SupabaseResearchRound } from '@/types/supabase';
 import { Calendar, Database } from 'lucide-react';
 
 interface ResearchSelectorProps {
-  researchRounds: ResearchRound[];
-  selectedRound: string;
-  onRoundChange: (roundId: string) => void;
+  researchRounds: SupabaseResearchRound[];
+  selectedResearch: SupabaseResearchRound | null;
+  onSelectionChange: (round: SupabaseResearchRound) => void;
 }
 
-export function ResearchSelector({ researchRounds, selectedRound, onRoundChange }: ResearchSelectorProps) {
-  const currentRound = researchRounds.find(r => r.id === selectedRound);
-
+export function ResearchSelector({ researchRounds, selectedResearch, onSelectionChange }: ResearchSelectorProps) {
   return (
     <Card className="bg-gradient-to-r from-primary/5 to-accent/5 border-primary/20">
       <CardHeader className="pb-3">
@@ -22,7 +20,13 @@ export function ResearchSelector({ researchRounds, selectedRound, onRoundChange 
       </CardHeader>
       <CardContent>
         <div className="space-y-4">
-          <Select value={selectedRound} onValueChange={onRoundChange}>
+          <Select 
+            value={selectedResearch?.id || ''} 
+            onValueChange={(value) => {
+              const round = researchRounds.find(r => r.id === value);
+              if (round) onSelectionChange(round);
+            }}
+          >
             <SelectTrigger className="w-full">
               <SelectValue placeholder="Selecione uma pesquisa" />
             </SelectTrigger>
@@ -38,12 +42,12 @@ export function ResearchSelector({ researchRounds, selectedRound, onRoundChange 
             </SelectContent>
           </Select>
           
-          {currentRound && (
+          {selectedResearch && (
             <div className="text-sm text-muted-foreground">
-              <div className="font-medium">{currentRound.description}</div>
+              <div className="font-medium">{selectedResearch.description}</div>
               <div className="flex items-center gap-1 mt-1">
                 <Calendar className="h-3 w-3" />
-                {new Date(currentRound.date).toLocaleDateString('pt-BR')}
+                {new Date(selectedResearch.date).toLocaleDateString('pt-BR')}
               </div>
             </div>
           )}

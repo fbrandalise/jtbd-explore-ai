@@ -1,42 +1,48 @@
-import { useState } from 'react';
-import { BigJob, LittleJob, Outcome } from '../types/jtbd';
-import { mockResearchRounds } from '../data/mockData';
-import { ResearchSelector } from '../components/ResearchSelector';
-import { BigJobCard } from '../components/BigJobCard';
-import { LittleJobCard } from '../components/LittleJobCard';
-import { OutcomeTable } from '../components/OutcomeTable';
-import { Breadcrumb } from '../components/Breadcrumb';
-import { Card, CardContent, CardHeader, CardTitle } from '../components/ui/card';
-import { Badge } from '../components/ui/badge';
-import { Button } from '../components/ui/button';
-import { ShoppingCart, TrendingUp, Target, Award, BarChart3, Map, Settings } from 'lucide-react';
-import { Link } from 'react-router-dom';
+import { useState, useEffect } from "react";
+import { ResearchSelector } from "@/components/ResearchSelector";
+import { BigJobCard } from "@/components/BigJobCard";
+import { LittleJobCard } from "@/components/LittleJobCard";
+import { OutcomeTable } from "@/components/OutcomeTable";
+import { OpportunityMeter } from "@/components/OpportunityMeter";
+import { Breadcrumb } from "@/components/Breadcrumb";
+import { useSupabaseData } from "@/hooks/useSupabaseData";
+import type { SupabaseResearchRound, SupabaseBigJob, SupabaseLittleJob, SupabaseOutcome } from "@/types/supabase";
+import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
+import { Badge } from "@/components/ui/badge";
+import { Home, Loader2, AlertCircle } from "lucide-react";
+import { Link } from "react-router-dom";
+import { Alert, AlertDescription } from "@/components/ui/alert";
 
-type NavigationState = {
+interface NavigationState {
   level: 'bigJobs' | 'littleJobs' | 'outcomes';
-  selectedBigJob?: BigJob;
-  selectedLittleJob?: LittleJob;
-};
+  selectedBigJob?: SupabaseBigJob;
+  selectedLittleJob?: SupabaseLittleJob;
+}
 
 const Index = () => {
-  const [selectedResearch, setSelectedResearch] = useState(mockResearchRounds[0].id);
+  const { researchRounds, isLoading, isSeeding, error } = useSupabaseData();
+  const [selectedResearch, setSelectedResearch] = useState<SupabaseResearchRound | null>(null);
   const [navigation, setNavigation] = useState<NavigationState>({ level: 'bigJobs' });
 
-  const currentResearch = mockResearchRounds.find(r => r.id === selectedResearch);
-  const currentData = currentResearch?.data;
+  // Set default research round when data loads
+  useEffect(() => {
+    if (researchRounds.length > 0 && !selectedResearch) {
+      setSelectedResearch(researchRounds[0]);
+    }
+  }, [researchRounds, selectedResearch]);
 
   const resetNavigation = () => {
     setNavigation({ level: 'bigJobs' });
   };
 
-  const navigateToBigJob = (bigJob: BigJob) => {
+  const navigateToBigJob = (bigJob: SupabaseBigJob) => {
     setNavigation({
       level: 'littleJobs',
       selectedBigJob: bigJob
     });
   };
 
-  const navigateToLittleJob = (littleJob: LittleJob) => {
+  const navigateToLittleJob = (littleJob: SupabaseLittleJob) => {
     setNavigation({
       ...navigation,
       level: 'outcomes',
@@ -50,145 +56,188 @@ const Index = () => {
     if (navigation.selectedBigJob) {
       items.push({
         label: navigation.selectedBigJob.name,
-        onClick: navigation.level === 'outcomes' ? () => setNavigation({ 
-          level: 'littleJobs', 
-          selectedBigJob: navigation.selectedBigJob 
-        }) : undefined
+        onClick: () => setNavigation({ level: 'littleJobs', selectedBigJob: navigation.selectedBigJob })
       });
     }
     
     if (navigation.selectedLittleJob) {
       items.push({
         label: navigation.selectedLittleJob.name,
-        onClick: undefined
+        onClick: () => setNavigation({ ...navigation, level: 'outcomes' })
       });
     }
     
     return items;
   };
 
-  const getAllOutcomes = () => {
-    if (!currentData) return [];
-    return currentData.bigJobs.flatMap(bj => 
-      bj.littleJobs.flatMap(lj => lj.outcomes)
+  const getAllOutcomes = (data: SupabaseResearchRound['data']): SupabaseOutcome[] => {
+    return data.bigJobs.flatMap(bigJob =>
+      bigJob.littleJobs.flatMap(littleJob => littleJob.outcomes)
     );
   };
 
-  const getTopOpportunities = () => {
-    return getAllOutcomes()
-      .sort((a, b) => b.opportunityScore - a.opportunityScore)
+  const getTopOpportunities = (outcomes: SupabaseOutcome[]) => {
+    return outcomes
+      .filter(outcome => outcome.opportunityScore !== undefined)
+      .sort((a, b) => (b.opportunityScore || 0) - (a.opportunityScore || 0))
       .slice(0, 3);
   };
 
-  if (!currentData) {
-    return <div>Carregando...</div>;
+  const currentData = selectedResearch?.data;
+  const allOutcomes = currentData ? getAllOutcomes(currentData) : [];
+  const topOpportunities = getTopOpportunities(allOutcomes);
+
+  // Loading and error states
+  if (isLoading || isSeeding) {
+    return (
+      <div className="min-h-screen bg-background p-6">
+        <div className="max-w-7xl mx-auto">
+          <div className="flex items-center justify-center h-96">
+            <div className="text-center">
+              <Loader2 className="h-8 w-8 animate-spin mx-auto mb-4" />
+              <p className="text-lg font-medium">
+                {isSeeding ? 'Inicializando banco de dados...' : 'Carregando dados...'}
+              </p>
+              {isSeeding && (
+                <p className="text-sm text-muted-foreground mt-2">
+                  Primeira execução - migrando dados para Supabase
+                </p>
+              )}
+            </div>
+          </div>
+        </div>
+      </div>
+    );
+  }
+
+  if (error) {
+    return (
+      <div className="min-h-screen bg-background p-6">
+        <div className="max-w-7xl mx-auto">
+          <Alert variant="destructive" className="mt-8">
+            <AlertCircle className="h-4 w-4" />
+            <AlertDescription>
+              Erro ao carregar dados: {error}
+            </AlertDescription>
+          </Alert>
+        </div>
+      </div>
+    );
+  }
+
+  if (!selectedResearch) {
+    return (
+      <div className="min-h-screen bg-background p-6">
+        <div className="max-w-7xl mx-auto">
+          <Alert className="mt-8">
+            <AlertCircle className="h-4 w-4" />
+            <AlertDescription>
+              Nenhuma pesquisa disponível
+            </AlertDescription>
+          </Alert>
+        </div>
+      </div>
+    );
   }
 
   return (
     <div className="min-h-screen bg-background">
       {/* Header */}
-      <header className="border-b bg-card/50 backdrop-blur-sm sticky top-0 z-50">
-        <div className="container mx-auto px-4 py-4">
-          <div className="flex items-center justify-between mb-4">
-            <div className="flex items-center gap-3">
-              <ShoppingCart className="h-8 w-8 text-primary" />
-              <div>
-                <h1 className="text-2xl font-bold">JTBD Marketplace Explorer</h1>
-                <p className="text-muted-foreground">Análise de Jobs to Be Done para vendedores em marketplaces</p>
-              </div>
-            </div>
-            <div className="flex gap-2">
-              <Button asChild className="gap-2">
-                <Link to="/analysis">
-                  <BarChart3 className="h-4 w-4" />
-                  Análise ODI
+      <header className="border-b bg-card">
+        <div className="max-w-7xl mx-auto px-6 py-4">
+          <div className="flex items-center justify-between">
+            <div className="flex items-center space-x-6">
+              <Link to="/" className="flex items-center space-x-2">
+                <Home className="h-5 w-5" />
+                <span className="font-medium">JTBD Marketplace Explorer</span>
+              </Link>
+              <nav className="flex space-x-6">
+                <Link to="/analysis" className="text-sm text-muted-foreground hover:text-foreground">
+                  Análise
                 </Link>
-              </Button>
-              <Button variant="outline" asChild className="gap-2">
-                <Link to="/analytics">
-                  <TrendingUp className="h-4 w-4" />
+                <Link to="/analytics" className="text-sm text-muted-foreground hover:text-foreground">
                   Analytics
                 </Link>
-              </Button>
-              <Button variant="outline" asChild className="gap-2">
-                <Link to="/journey">
-                  <Map className="h-4 w-4" />
+                <Link to="/journey" className="text-sm text-muted-foreground hover:text-foreground">
                   Jornada
                 </Link>
-              </Button>
-              <Button variant="outline" asChild className="gap-2">
-                <Link to="/admin">
-                  <Settings className="h-4 w-4" />
+                <Link to="/admin" className="text-sm text-muted-foreground hover:text-foreground">
                   Admin
                 </Link>
-              </Button>
+              </nav>
+            </div>
+            <div className="text-sm text-muted-foreground">
+              {selectedResearch.name}
             </div>
           </div>
-          
-          <Breadcrumb items={getBreadcrumbItems()} />
         </div>
       </header>
 
-      <div className="container mx-auto px-4 py-6">
-        <div className="grid grid-cols-1 lg:grid-cols-4 gap-6">
+      <div className="max-w-7xl mx-auto p-6">
+        <div className="flex gap-6">
           {/* Sidebar */}
-          <div className="lg:col-span-1 space-y-4">
+          <div className="w-80 space-y-6">
             <ResearchSelector
-              researchRounds={mockResearchRounds}
-              selectedRound={selectedResearch}
-              onRoundChange={setSelectedResearch}
+              researchRounds={researchRounds}
+              selectedResearch={selectedResearch}
+              onSelectionChange={setSelectedResearch}
             />
 
-            {/* Quick Stats */}
+            {/* Summary Card */}
             <Card>
-              <CardHeader className="pb-3">
-                <CardTitle className="text-lg flex items-center gap-2">
-                  <TrendingUp className="h-5 w-5" />
-                  Resumo
-                </CardTitle>
+              <CardHeader>
+                <CardTitle className="text-lg">Resumo da Pesquisa</CardTitle>
               </CardHeader>
-              <CardContent className="space-y-3">
-                <div className="flex justify-between items-center">
-                  <span className="text-sm text-muted-foreground">Big Jobs</span>
-                  <Badge variant="outline">{currentData.bigJobs.length}</Badge>
-                </div>
-                <div className="flex justify-between items-center">
-                  <span className="text-sm text-muted-foreground">Little Jobs</span>
-                  <Badge variant="outline">
-                    {currentData.bigJobs.reduce((acc, bj) => acc + bj.littleJobs.length, 0)}
-                  </Badge>
-                </div>
-                <div className="flex justify-between items-center">
-                  <span className="text-sm text-muted-foreground">Outcomes</span>
-                  <Badge variant="outline">{getAllOutcomes().length}</Badge>
-                </div>
-                <div className="flex justify-between items-center">
-                  <span className="text-sm text-muted-foreground">Alta Oportunidade</span>
-                  <Badge variant="destructive">
-                    {getAllOutcomes().filter(o => o.opportunityScore >= 15).length}
-                  </Badge>
+              <CardContent className="space-y-4">
+                <div className="grid grid-cols-2 gap-4">
+                  <div className="text-center">
+                    <div className="text-2xl font-bold text-primary">
+                      {currentData?.bigJobs.length || 0}
+                    </div>
+                    <div className="text-sm text-muted-foreground">Big Jobs</div>
+                  </div>
+                  <div className="text-center">
+                    <div className="text-2xl font-bold text-primary">
+                      {currentData?.bigJobs.reduce((acc, bj) => acc + bj.littleJobs.length, 0) || 0}
+                    </div>
+                    <div className="text-sm text-muted-foreground">Little Jobs</div>
+                  </div>
+                  <div className="text-center">
+                    <div className="text-2xl font-bold text-primary">
+                      {allOutcomes.length}
+                    </div>
+                    <div className="text-sm text-muted-foreground">Outcomes</div>
+                  </div>
+                  <div className="text-center">
+                    <div className="text-2xl font-bold text-primary">
+                      {allOutcomes.filter(o => (o.opportunityScore || 0) >= 15).length}
+                    </div>
+                    <div className="text-sm text-muted-foreground">High Opportunity</div>
+                  </div>
                 </div>
               </CardContent>
             </Card>
 
-            {/* Top Opportunities */}
-            {navigation.level === 'bigJobs' && (
+            {/* Top Opportunities Card */}
+            {topOpportunities.length > 0 && (
               <Card>
-                <CardHeader className="pb-3">
-                  <CardTitle className="text-lg flex items-center gap-2">
-                    <Award className="h-5 w-5" />
-                    Top Oportunidades
-                  </CardTitle>
+                <CardHeader>
+                  <CardTitle className="text-lg">Top Oportunidades</CardTitle>
                 </CardHeader>
                 <CardContent className="space-y-3">
-                  {getTopOpportunities().map((outcome, index) => (
-                    <div key={outcome.id} className="space-y-1">
-                      <div className="text-sm font-medium">{outcome.name}</div>
-                      <div className="flex justify-between items-center">
-                        <Badge variant="outline" className="text-xs">#{index + 1}</Badge>
-                        <Badge variant="destructive" className="text-xs">
-                          {outcome.opportunityScore.toFixed(1)}
-                        </Badge>
+                  {topOpportunities.map((outcome, index) => (
+                    <div key={outcome.id} className="flex items-center justify-between">
+                      <div className="flex-1 min-w-0">
+                        <p className="text-sm font-medium truncate">{outcome.name}</p>
+                        <div className="flex items-center space-x-2 mt-1">
+                          <Badge variant="secondary" className="text-xs">
+                            #{index + 1}
+                          </Badge>
+                          <OpportunityMeter score={outcome.opportunityScore || 0} size="sm" />
+                        </div>
+                      </div>
+                      <div className="text-lg font-bold text-primary ml-2">
+                        {outcome.opportunityScore?.toFixed(1)}
                       </div>
                     </div>
                   ))}
@@ -198,51 +247,43 @@ const Index = () => {
           </div>
 
           {/* Main Content */}
-          <div className="lg:col-span-3">
-            {navigation.level === 'bigJobs' && (
-              <div className="space-y-6">
-                <div className="flex items-center gap-2">
-                  <Target className="h-6 w-6 text-primary" />
-                  <h2 className="text-xl font-semibold">Big Jobs</h2>
-                </div>
-                <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-                  {currentData.bigJobs.map((bigJob) => (
+          <div className="flex-1">
+            <div className="space-y-6">
+              <div className="flex items-center justify-between">
+                <Breadcrumb items={getBreadcrumbItems()} />
+              </div>
+
+              {navigation.level === 'bigJobs' && (
+                <div className="grid gap-4 md:grid-cols-2 lg:grid-cols-3">
+                  {currentData?.bigJobs.map((bigJob) => (
                     <BigJobCard
                       key={bigJob.id}
                       bigJob={bigJob}
-                      onClick={() => navigateToBigJob(bigJob)}
+                      onNavigate={navigateToBigJob}
                     />
                   ))}
                 </div>
-              </div>
-            )}
+              )}
 
-            {navigation.level === 'littleJobs' && navigation.selectedBigJob && (
-              <div className="space-y-6">
-                <div className="flex items-center gap-2">
-                  <Target className="h-6 w-6 text-accent" />
-                  <h2 className="text-xl font-semibold">Little Jobs</h2>
-                </div>
-                <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+              {navigation.level === 'littleJobs' && navigation.selectedBigJob && (
+                <div className="grid gap-4 md:grid-cols-2 lg:grid-cols-3">
                   {navigation.selectedBigJob.littleJobs.map((littleJob) => (
                     <LittleJobCard
                       key={littleJob.id}
                       littleJob={littleJob}
-                      onClick={() => navigateToLittleJob(littleJob)}
+                      onNavigate={navigateToLittleJob}
                     />
                   ))}
                 </div>
-              </div>
-            )}
+              )}
 
-            {navigation.level === 'outcomes' && navigation.selectedLittleJob && (
-              <div className="space-y-6">
+              {navigation.level === 'outcomes' && navigation.selectedLittleJob && (
                 <OutcomeTable
                   outcomes={navigation.selectedLittleJob.outcomes}
-                  title={`Outcomes - ${navigation.selectedLittleJob.name}`}
+                  showFilters={false}
                 />
-              </div>
-            )}
+              )}
+            </div>
           </div>
         </div>
       </div>

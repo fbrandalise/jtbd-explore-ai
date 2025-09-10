@@ -14,10 +14,262 @@ export type Database = {
   }
   public: {
     Tables: {
-      [_ in never]: never
+      big_jobs: {
+        Row: {
+          created_at: string | null
+          description: string | null
+          id: string
+          name: string
+          order_index: number | null
+          slug: string
+          status: string | null
+          tags: string[] | null
+          updated_at: string | null
+        }
+        Insert: {
+          created_at?: string | null
+          description?: string | null
+          id?: string
+          name: string
+          order_index?: number | null
+          slug: string
+          status?: string | null
+          tags?: string[] | null
+          updated_at?: string | null
+        }
+        Update: {
+          created_at?: string | null
+          description?: string | null
+          id?: string
+          name?: string
+          order_index?: number | null
+          slug?: string
+          status?: string | null
+          tags?: string[] | null
+          updated_at?: string | null
+        }
+        Relationships: []
+      }
+      change_logs: {
+        Row: {
+          action: string
+          actor: string | null
+          after: Json | null
+          before: Json | null
+          created_at: string | null
+          entity: string
+          entity_id: string
+          id: string
+        }
+        Insert: {
+          action: string
+          actor?: string | null
+          after?: Json | null
+          before?: Json | null
+          created_at?: string | null
+          entity: string
+          entity_id: string
+          id?: string
+        }
+        Update: {
+          action?: string
+          actor?: string | null
+          after?: Json | null
+          before?: Json | null
+          created_at?: string | null
+          entity?: string
+          entity_id?: string
+          id?: string
+        }
+        Relationships: []
+      }
+      little_jobs: {
+        Row: {
+          big_job_id: string
+          created_at: string | null
+          description: string | null
+          id: string
+          name: string
+          order_index: number | null
+          slug: string
+          status: string | null
+          updated_at: string | null
+        }
+        Insert: {
+          big_job_id: string
+          created_at?: string | null
+          description?: string | null
+          id?: string
+          name: string
+          order_index?: number | null
+          slug: string
+          status?: string | null
+          updated_at?: string | null
+        }
+        Update: {
+          big_job_id?: string
+          created_at?: string | null
+          description?: string | null
+          id?: string
+          name?: string
+          order_index?: number | null
+          slug?: string
+          status?: string | null
+          updated_at?: string | null
+        }
+        Relationships: [
+          {
+            foreignKeyName: "little_jobs_big_job_id_fkey"
+            columns: ["big_job_id"]
+            isOneToOne: false
+            referencedRelation: "big_jobs"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
+      outcome_results: {
+        Row: {
+          created_at: string | null
+          id: string
+          importance: number
+          opportunity_score: number
+          outcome_id: string
+          satisfaction: number
+          survey_id: string
+          updated_at: string | null
+        }
+        Insert: {
+          created_at?: string | null
+          id?: string
+          importance: number
+          opportunity_score: number
+          outcome_id: string
+          satisfaction: number
+          survey_id: string
+          updated_at?: string | null
+        }
+        Update: {
+          created_at?: string | null
+          id?: string
+          importance?: number
+          opportunity_score?: number
+          outcome_id?: string
+          satisfaction?: number
+          survey_id?: string
+          updated_at?: string | null
+        }
+        Relationships: [
+          {
+            foreignKeyName: "outcome_results_outcome_id_fkey"
+            columns: ["outcome_id"]
+            isOneToOne: false
+            referencedRelation: "outcomes"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "outcome_results_survey_id_fkey"
+            columns: ["survey_id"]
+            isOneToOne: false
+            referencedRelation: "surveys"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
+      outcomes: {
+        Row: {
+          created_at: string | null
+          description: string | null
+          id: string
+          little_job_id: string
+          name: string
+          order_index: number | null
+          slug: string
+          status: string | null
+          tags: string[] | null
+          updated_at: string | null
+        }
+        Insert: {
+          created_at?: string | null
+          description?: string | null
+          id?: string
+          little_job_id: string
+          name: string
+          order_index?: number | null
+          slug: string
+          status?: string | null
+          tags?: string[] | null
+          updated_at?: string | null
+        }
+        Update: {
+          created_at?: string | null
+          description?: string | null
+          id?: string
+          little_job_id?: string
+          name?: string
+          order_index?: number | null
+          slug?: string
+          status?: string | null
+          tags?: string[] | null
+          updated_at?: string | null
+        }
+        Relationships: [
+          {
+            foreignKeyName: "outcomes_little_job_id_fkey"
+            columns: ["little_job_id"]
+            isOneToOne: false
+            referencedRelation: "little_jobs"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
+      surveys: {
+        Row: {
+          code: string
+          created_at: string | null
+          date: string
+          description: string | null
+          id: string
+          name: string
+          updated_at: string | null
+        }
+        Insert: {
+          code: string
+          created_at?: string | null
+          date: string
+          description?: string | null
+          id?: string
+          name: string
+          updated_at?: string | null
+        }
+        Update: {
+          code?: string
+          created_at?: string | null
+          date?: string
+          description?: string | null
+          id?: string
+          name?: string
+          updated_at?: string | null
+        }
+        Relationships: []
+      }
     }
     Views: {
-      [_ in never]: never
+      vw_outcomes_long: {
+        Row: {
+          big_job_name: string | null
+          big_job_slug: string | null
+          importance: number | null
+          little_job_name: string | null
+          little_job_slug: string | null
+          opportunity_score: number | null
+          outcome_name: string | null
+          outcome_slug: string | null
+          satisfaction: number | null
+          survey_code: string | null
+          survey_date: string | null
+        }
+        Relationships: []
+      }
     }
     Functions: {
       [_ in never]: never

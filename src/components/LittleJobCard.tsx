@@ -1,21 +1,24 @@
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from './ui/card';
 import { Badge } from './ui/badge';
-import { LittleJob } from '../types/jtbd';
+import { SupabaseLittleJob } from '@/types/supabase';
 import { ChevronRight, CheckSquare } from 'lucide-react';
 
 interface LittleJobCardProps {
-  littleJob: LittleJob;
-  onClick: () => void;
+  littleJob: SupabaseLittleJob;
+  onNavigate: (littleJob: SupabaseLittleJob) => void;
 }
 
-export function LittleJobCard({ littleJob, onClick }: LittleJobCardProps) {
-  const avgOpportunityScore = littleJob.outcomes.reduce((acc, outcome) => acc + outcome.opportunityScore, 0) / littleJob.outcomes.length;
-  const highOpportunityCount = littleJob.outcomes.filter(o => o.opportunityScore >= 15).length;
+export function LittleJobCard({ littleJob, onNavigate }: LittleJobCardProps) {
+  const outcomesWithScores = littleJob.outcomes.filter(o => o.opportunityScore !== undefined);
+  const avgOpportunityScore = outcomesWithScores.length > 0 
+    ? outcomesWithScores.reduce((acc, outcome) => acc + (outcome.opportunityScore || 0), 0) / outcomesWithScores.length 
+    : 0;
+  const highOpportunityCount = littleJob.outcomes.filter(o => (o.opportunityScore || 0) >= 15).length;
 
   return (
     <Card 
       className="cursor-pointer transition-all duration-200 hover:shadow-lg hover:scale-[1.02] border-2 hover:border-accent/30 bg-gradient-to-br from-card to-accent/5"
-      onClick={onClick}
+      onClick={() => onNavigate(littleJob)}
     >
       <CardHeader className="pb-3">
         <div className="flex items-start justify-between">

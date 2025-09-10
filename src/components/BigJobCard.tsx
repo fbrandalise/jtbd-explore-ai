@@ -1,23 +1,26 @@
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from './ui/card';
 import { Badge } from './ui/badge';
-import { BigJob } from '../types/jtbd';
+import { SupabaseBigJob } from '@/types/supabase';
 import { ChevronRight, Target } from 'lucide-react';
 
 interface BigJobCardProps {
-  bigJob: BigJob;
-  onClick: () => void;
+  bigJob: SupabaseBigJob;
+  onNavigate: (bigJob: SupabaseBigJob) => void;
 }
 
-export function BigJobCard({ bigJob, onClick }: BigJobCardProps) {
+export function BigJobCard({ bigJob, onNavigate }: BigJobCardProps) {
   const totalOutcomes = bigJob.littleJobs.reduce((acc, lj) => acc + lj.outcomes.length, 0);
-  const avgOpportunityScore = bigJob.littleJobs
+  const outcomesWithScores = bigJob.littleJobs
     .flatMap(lj => lj.outcomes)
-    .reduce((acc, outcome) => acc + outcome.opportunityScore, 0) / totalOutcomes;
+    .filter(outcome => outcome.opportunityScore !== undefined);
+  const avgOpportunityScore = outcomesWithScores.length > 0 
+    ? outcomesWithScores.reduce((acc, outcome) => acc + (outcome.opportunityScore || 0), 0) / outcomesWithScores.length
+    : 0;
 
   return (
     <Card 
       className="cursor-pointer transition-all duration-200 hover:shadow-lg hover:scale-[1.02] border-2 hover:border-primary/20 bg-gradient-to-br from-card to-muted/20"
-      onClick={onClick}
+      onClick={() => onNavigate(bigJob)}
     >
       <CardHeader className="pb-3">
         <div className="flex items-start justify-between">
