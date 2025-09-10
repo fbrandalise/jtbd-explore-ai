@@ -11,18 +11,23 @@ export function useSupabaseData() {
 
   const loadData = async () => {
     try {
+      console.log('🔄 Starting data load...');
       setIsLoading(true);
       setError(null);
 
       // Check if database is seeded
+      console.log('🔍 Checking if database is seeded...');
       const isSeeded = await isDatabaseSeeded();
+      console.log('📊 Database seeded:', isSeeded);
       
       if (!isSeeded) {
-        console.log('Database not seeded, starting seeding process...');
+        console.log('🌱 Database not seeded, starting seeding process...');
         setIsSeeding(true);
         const seedSuccess = await seedDatabase();
+        console.log('✅ Seed success:', seedSuccess);
         
         if (!seedSuccess) {
+          console.error('❌ Failed to seed database');
           setError('Failed to seed database with initial data');
           return;
         }
@@ -30,10 +35,12 @@ export function useSupabaseData() {
       }
 
       // Load research rounds
+      console.log('📥 Loading research rounds...');
       const rounds = await supabaseRepository.getResearchRounds();
+      console.log('📊 Loaded rounds:', rounds.length, rounds);
       setResearchRounds(rounds);
     } catch (err) {
-      console.error('Error loading Supabase data:', err);
+      console.error('💥 Error loading Supabase data:', err);
       setError(err instanceof Error ? err.message : 'Unknown error occurred');
     } finally {
       setIsLoading(false);

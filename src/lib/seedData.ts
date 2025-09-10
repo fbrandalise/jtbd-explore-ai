@@ -121,12 +121,18 @@ export async function seedDatabase() {
  */
 export async function isDatabaseSeeded(): Promise<boolean> {
   try {
+    console.log('🔍 Checking database seeding status...');
     const hierarchy = await supabaseRepository.getHierarchy();
     const surveys = await supabaseRepository.listSurveys();
     
-    return !!(hierarchy?.bigJobs.length && surveys.length);
+    console.log('📊 Hierarchy bigJobs count:', hierarchy?.bigJobs.length || 0);
+    console.log('📊 Surveys count:', surveys.length);
+    
+    const isSeeded = !!(hierarchy?.bigJobs.length && surveys.length);
+    console.log('✅ Database is seeded:', isSeeded);
+    return isSeeded;
   } catch (error) {
-    console.error('Error checking if database is seeded:', error);
+    console.error('💥 Error checking if database is seeded:', error);
     return false;
   }
 }

@@ -92,6 +92,7 @@ class SupabaseRepository {
 
   // HIERARCHY METHODS
   async getHierarchy(): Promise<SupabaseJTBDData | null> {
+    console.log('📊 Fetching hierarchy from Supabase...');
     await this.refreshSlugCache();
     
     const { data: bigJobs, error } = await supabase
@@ -107,11 +108,15 @@ class SupabaseRepository {
       .order('order_index');
 
     if (error) {
-      console.error('Error fetching hierarchy:', error);
+      console.error('💥 Error fetching hierarchy:', error);
       return null;
     }
 
-    if (!bigJobs) return { bigJobs: [] };
+    console.log('📊 Raw bigJobs data:', bigJobs?.length || 0);
+    if (!bigJobs) {
+      console.log('⚠️ No bigJobs found, returning empty hierarchy');
+      return { bigJobs: [] };
+    }
 
     const convertedBigJobs: SupabaseBigJob[] = bigJobs.map(bj => ({
       id: bj.slug,
@@ -141,27 +146,33 @@ class SupabaseRepository {
         }))
     }));
 
+    console.log('✅ Converted hierarchy with', convertedBigJobs.length, 'big jobs');
     return { bigJobs: convertedBigJobs };
   }
 
   // SURVEY METHODS
   async listSurveys(): Promise<SupabaseSurvey[]> {
+    console.log('📊 Fetching surveys from Supabase...');
     const { data, error } = await supabase
       .from('surveys')
       .select('*')
       .order('date', { ascending: true });
 
     if (error) {
-      console.error('Error fetching surveys:', error);
+      console.error('💥 Error fetching surveys:', error);
       return [];
     }
 
-    return data.map(survey => ({
+    console.log('📊 Found', data?.length || 0, 'surveys');
+    const surveys = data.map(survey => ({
       id: survey.code,
       name: survey.name,
       date: survey.date,
       description: survey.description
     }));
+    
+    console.log('✅ Converted surveys:', surveys);
+    return surveys;
   }
 
   async upsertSurvey(survey: Omit<SupabaseSurvey, 'id'> & { code: string }): Promise<boolean> {
