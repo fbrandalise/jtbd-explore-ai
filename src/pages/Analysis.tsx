@@ -295,7 +295,7 @@ const Analysis = () => {
                 </p>
               </CardHeader>
               <CardContent>
-                <div className="h-96">
+                <div className="h-96 relative">
                   <ResponsiveContainer width="100%" height="100%">
                     <ScatterChart margin={{ top: 20, right: 20, bottom: 40, left: 60 }}>
                       <CartesianGrid strokeDasharray="3 3" />
@@ -325,12 +325,12 @@ const Analysis = () => {
                       <ReferenceLine 
                         segment={[{ x: 5, y: 0 }, { x: 10, y: 10 }]} 
                         stroke="black" 
-                        strokeWidth={2}
+                        strokeWidth={0.8}
                       />
                       <ReferenceLine 
                         segment={[{ x: 0, y: 0 }, { x: 10, y: 10 }]} 
                         stroke="black" 
-                        strokeWidth={2}
+                        strokeWidth={0.8}
                       />
                       
                       <Tooltip content={<CustomTooltip />} />
@@ -350,6 +350,20 @@ const Analysis = () => {
                       </Scatter>
                     </ScatterChart>
                   </ResponsiveContainer>
+                  
+                  {/* Underserved Area Overlay */}
+                  <div 
+                    className="absolute top-5 left-16 right-5 bottom-10 pointer-events-none"
+                    style={{
+                      background: 'linear-gradient(135deg, transparent 50%, rgba(239, 68, 68, 0.08) 50%)',
+                      clipPath: 'polygon(50% 100%, 100% 0%, 100% 100%)'
+                    }}
+                  />
+                  
+                  {/* Underserved Label */}
+                  <div className="absolute bottom-16 right-8 text-xs text-red-500/70 font-medium pointer-events-none">
+                    Underserved
+                  </div>
                 </div>
                 
                 {/* Zone Legend */}
