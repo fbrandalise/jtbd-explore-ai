@@ -109,13 +109,16 @@ serve(async (req) => {
 
     console.log('Organization found:', org);
 
+    console.log('Checking admin permissions for user:', user.id, 'in org:', org.id);
     // Verify current user is admin of this org
-    const { data: membership } = await supabaseAdmin
+    const { data: membership, error: membershipError } = await supabaseAdmin
       .from('org_members')
       .select('role')
       .eq('org_id', org.id)
       .eq('user_id', user.id)
       .single();
+
+    console.log('Membership query result:', { data: membership, error: membershipError });
 
     if (!membership || membership.role !== 'admin') {
       console.error('User is not admin of this org');
