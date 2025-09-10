@@ -139,8 +139,18 @@ serve(async (req) => {
     let newUser;
     if (existingUser.users && existingUser.users.length > 0) {
       console.log('User already exists, checking membership...');
-      // User exists, check if already member of org
-      const existingUserData = existingUser.users[0];
+      // User exists, find the correct user by email
+      const existingUserData = existingUser.users.find(user => user.email === email);
+      
+      if (!existingUserData) {
+        console.log('No user found with email:', email);
+        // This shouldn't happen given our filter, but handle it gracefully
+        return new Response(JSON.stringify({ error: 'User lookup failed' }), {
+          status: 500,
+          headers: { ...corsHeaders, 'Content-Type': 'application/json' },
+        });
+      }
+      
       console.log('Existing user data:', { id: existingUserData.id, email: existingUserData.email });
       
       const { data: existingMembership, error: membershipCheckError } = await supabaseAdmin
