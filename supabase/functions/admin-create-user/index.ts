@@ -72,7 +72,19 @@ serve(async (req) => {
     }
 
     console.log('Parsing request body...');
-    const { email, name, role, orgSlug }: CreateUserRequest = await req.json();
+    let requestBody;
+    try {
+      requestBody = await req.json();
+      console.log('Request body parsed successfully:', requestBody);
+    } catch (parseError) {
+      console.error('Failed to parse request body:', parseError);
+      return new Response(JSON.stringify({ error: 'Invalid JSON in request body' }), {
+        status: 400,
+        headers: { ...corsHeaders, 'Content-Type': 'application/json' },
+      });
+    }
+    
+    const { email, name, role, orgSlug }: CreateUserRequest = requestBody;
     console.log(`Admin ${user.email} creating user ${email} with role ${role} for org ${orgSlug}`);
 
     console.log('Looking up organization...');
