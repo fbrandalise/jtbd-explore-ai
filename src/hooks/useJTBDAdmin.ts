@@ -82,7 +82,7 @@ export const useJTBDAdmin = () => {
       errors.push({ field: 'description', message: 'Descrição não pode exceder 500 caracteres' });
     }
 
-    if (entity.id && !isIdUnique(entity.id)) {
+    if (entity.id && entity.id !== '' && !isIdUnique(entity.id)) {
       errors.push({ field: 'id', message: 'Este ID já está em uso' });
     }
 

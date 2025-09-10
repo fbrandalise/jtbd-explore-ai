@@ -105,7 +105,7 @@ const TreeItem: React.FC<TreeItemProps> = ({
             {item.status === 'archived' && (
               <Badge variant="secondary" className="text-xs">Arquivado</Badge>
             )}
-            {'tags' in item && item.tags && item.tags.length > 0 && (
+            {item && 'tags' in item && item.tags && item.tags.length > 0 && (
               <div className="flex gap-1">
                 {item.tags.slice(0, 2).map(tag => (
                   <Badge key={tag} variant="outline" className="text-xs">{tag}</Badge>
@@ -122,12 +122,12 @@ const TreeItem: React.FC<TreeItemProps> = ({
         </div>
         
         <div className="flex items-center gap-1">
-          {type === 'bigJob' && 'littleJobs' in item && (
+          {type === 'bigJob' && item && 'littleJobs' in item && (
             <Badge variant="secondary" className="text-xs">
               {item.littleJobs.length} Little Jobs
             </Badge>
           )}
-          {type === 'littleJob' && 'outcomes' in item && (
+          {type === 'littleJob' && item && 'outcomes' in item && (
             <Badge variant="secondary" className="text-xs">
               {item.outcomes.length} Outcomes
             </Badge>
@@ -183,7 +183,7 @@ const EntityForm: React.FC<EntityFormProps> = ({ type, entity, onSave, onCancel,
     id: entity?.id || '',
     name: entity?.name || '',
     description: entity?.description || '',
-    tags: 'tags' in entity ? entity.tags?.join(', ') || '' : ''
+    tags: entity && 'tags' in entity ? entity.tags?.join(', ') || '' : ''
   });
 
   const handleSubmit = (e: React.FormEvent) => {
@@ -516,7 +516,7 @@ export const Admin: React.FC = () => {
                       </div>
                     )}
                     
-                    {'tags' in selectedEntity.item && selectedEntity.item.tags && selectedEntity.item.tags.length > 0 && (
+                    {selectedEntity.item && 'tags' in selectedEntity.item && selectedEntity.item.tags && selectedEntity.item.tags.length > 0 && (
                       <div>
                         <h4 className="font-medium mb-2">Tags</h4>
                         <div className="flex flex-wrap gap-1">
