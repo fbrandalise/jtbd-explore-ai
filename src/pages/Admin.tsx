@@ -16,13 +16,15 @@ import { DropdownMenu, DropdownMenuContent, DropdownMenuItem, DropdownMenuSepara
 import { AlertDialog, AlertDialogAction, AlertDialogCancel, AlertDialogContent, AlertDialogDescription, AlertDialogFooter, AlertDialogHeader, AlertDialogTitle, AlertDialogTrigger } from '@/components/ui/alert-dialog';
 import { Label } from '@/components/ui/label';
 import { Collapsible, CollapsibleContent, CollapsibleTrigger } from '@/components/ui/collapsible';
-import { useJTBDAdmin } from '@/hooks/useJTBDAdmin';
-import { AdminBigJob, AdminLittleJob, AdminOutcome, EntityType } from '@/types/admin';
+import { useSupabaseJTBDAdmin } from '@/hooks/useSupabaseJTBDAdmin';
+import { SupabaseBigJob, SupabaseLittleJob, SupabaseOutcome } from '@/types/supabase';
+
+type EntityType = 'bigJob' | 'littleJob' | 'outcome';
 import { ChevronDown, ChevronRight } from 'lucide-react';
 
 interface TreeItemProps {
   type: EntityType;
-  item: AdminBigJob | AdminLittleJob | AdminOutcome;
+  item: SupabaseBigJob | SupabaseLittleJob | SupabaseOutcome;
   level: number;
   onSelect: (type: EntityType, item: any) => void;
   onEdit: (type: EntityType, item: any) => void;
@@ -173,13 +175,14 @@ const TreeItem: React.FC<TreeItemProps> = ({
 
 interface EntityFormProps {
   type: EntityType;
-  entity?: AdminBigJob | AdminLittleJob | AdminOutcome;
+  entity?: SupabaseBigJob | SupabaseLittleJob | SupabaseOutcome;
   onSave: (data: any) => void;
   onCancel: () => void;
-  generateId: (name: string, type: string) => string;
+  generateSlug: (name: string) => string;
+  isSubmitting?: boolean;
 }
 
-const EntityForm: React.FC<EntityFormProps> = ({ type, entity, onSave, onCancel, generateId }) => {
+const EntityForm: React.FC<EntityFormProps> = ({ type, entity, onSave, onCancel, generateSlug, isSubmitting }) => {
   const [formData, setFormData] = useState({
     id: entity?.id || '',
     name: entity?.name || '',
@@ -195,7 +198,7 @@ const EntityForm: React.FC<EntityFormProps> = ({ type, entity, onSave, onCancel,
     };
     
     if (!entity && !formData.id) {
-      data.id = generateId(formData.name, type);
+      data.id = generateSlug(formData.name);
     }
     
     onSave(data);
@@ -205,7 +208,7 @@ const EntityForm: React.FC<EntityFormProps> = ({ type, entity, onSave, onCancel,
     setFormData(prev => ({
       ...prev,
       name: value,
-      id: !entity ? generateId(value, type) : prev.id
+      id: !entity ? generateSlug(value) : prev.id
     }));
   };
 
@@ -258,8 +261,8 @@ const EntityForm: React.FC<EntityFormProps> = ({ type, entity, onSave, onCancel,
       )}
       
       <div className="flex gap-2 pt-4">
-        <Button type="submit" className="flex-1">
-          {entity ? 'Atualizar' : 'Criar'}
+        <Button type="submit" className="flex-1" disabled={isSubmitting}>
+          {isSubmitting ? 'Salvando...' : entity ? 'Atualizar' : 'Criar'}
         </Button>
         <Button type="button" variant="outline" onClick={onCancel}>
           Cancelar
@@ -272,12 +275,9 @@ const EntityForm: React.FC<EntityFormProps> = ({ type, entity, onSave, onCancel,
 export const Admin: React.FC = () => {
   const {
     hierarchy,
-    auditLogs,
-    unsavedChanges,
-    searchTerm,
-    setSearchTerm,
-    statusFilter,
-    setStatusFilter,
+    isLoading,
+    isSubmitting,
+    error,
     createBigJob,
     createLittleJob,
     createOutcome,
@@ -285,13 +285,12 @@ export const Admin: React.FC = () => {
     updateLittleJob,
     updateOutcome,
     deleteBigJob,
-    archiveEntity,
-    generateId,
-    exportHierarchy,
-    importHierarchy,
-    saveChanges,
-    discardChanges
-  } = useJTBDAdmin();
+    archiveBigJob,
+    generateSlug
+  } = useSupabaseJTBDAdmin();
+
+  const [searchTerm, setSearchTerm] = useState('');
+  const [statusFilter, setStatusFilter] = useState<'all' | 'active' | 'archived'>('active');
 
   const [selectedEntity, setSelectedEntity] = useState<{
     type: EntityType;
@@ -314,64 +313,56 @@ export const Admin: React.FC = () => {
     setEditingEntity({ type, item });
   };
 
-  const handleDelete = (type: EntityType, id: string) => {
+  const handleDelete = async (type: EntityType, id: string) => {
     if (type === 'bigJob') {
-      deleteBigJob(id);
+      await deleteBigJob(id);
     }
     // Add other delete operations as needed
   };
 
-  const handleArchive = (type: EntityType, id: string) => {
-    if (selectedEntity?.item) {
-      archiveEntity(type, id, selectedEntity.item.bigJobId, selectedEntity.item.littleJobId);
+  const handleArchive = async (type: EntityType, id: string) => {
+    if (type === 'bigJob') {
+      await archiveBigJob(id);
     }
+    // Add other archive operations as needed
   };
 
-  const handleSave = (data: any) => {
+  const handleSave = async (data: any) => {
     if (editingEntity) {
       const { type, item } = editingEntity;
       if (type === 'bigJob') {
-        updateBigJob(item.id, data);
+        const success = await updateBigJob(item.id, data);
+        if (success) setEditingEntity(null);
       } else if (type === 'littleJob') {
-        updateLittleJob(item.bigJobId, item.id, data);
+        const success = await updateLittleJob(item.id, data);
+        if (success) setEditingEntity(null);
       } else if (type === 'outcome') {
-        updateOutcome(item.bigJobId, item.littleJobId, item.id, data);
+        const success = await updateOutcome(item.id, data);
+        if (success) setEditingEntity(null);
       }
-      setEditingEntity(null);
     } else if (showCreateDialog) {
       const { type, parentIds } = showCreateDialog;
       if (type === 'bigJob') {
-        createBigJob(data);
+        const success = await createBigJob(data);
+        if (success) setShowCreateDialog(null);
       } else if (type === 'littleJob' && parentIds?.bigJobId) {
-        createLittleJob(parentIds.bigJobId, data);
-      } else if (type === 'outcome' && parentIds?.bigJobId && parentIds?.littleJobId) {
-        createOutcome(parentIds.bigJobId, parentIds.littleJobId, data);
+        const success = await createLittleJob({ ...data, bigJobSlug: parentIds.bigJobId });
+        if (success) setShowCreateDialog(null);
+      } else if (type === 'outcome' && parentIds?.littleJobId) {
+        const success = await createOutcome({ ...data, littleJobSlug: parentIds.littleJobId });
+        if (success) setShowCreateDialog(null);
       }
-      setShowCreateDialog(null);
     }
   };
 
   const handleExport = () => {
-    const dataStr = exportHierarchy();
-    const dataBlob = new Blob([dataStr], { type: 'application/json' });
-    const url = URL.createObjectURL(dataBlob);
-    const link = document.createElement('a');
-    link.href = url;
-    link.download = 'jtbd-hierarchy.json';
-    link.click();
-    URL.revokeObjectURL(url);
+    // TODO: Implement export functionality
+    console.log('Export not yet implemented');
   };
 
   const handleImport = (event: React.ChangeEvent<HTMLInputElement>) => {
-    const file = event.target.files?.[0];
-    if (file) {
-      const reader = new FileReader();
-      reader.onload = (e) => {
-        const content = e.target?.result as string;
-        importHierarchy(content);
-      };
-      reader.readAsText(file);
-    }
+    // TODO: Implement import functionality  
+    console.log('Import not yet implemented');
   };
 
   return (
@@ -386,9 +377,14 @@ export const Admin: React.FC = () => {
               </Link>
             </Button>
             <h1 className="text-2xl font-bold">Administração JTBD</h1>
-            {unsavedChanges && (
-              <Badge variant="secondary" className="bg-warning text-warning-foreground">
-                Alterações não salvas
+            {isLoading && (
+              <Badge variant="secondary">
+                Carregando...
+              </Badge>
+            )}
+            {error && (
+              <Badge variant="destructive">
+                Erro: {error}
               </Badge>
             )}
           </div>
@@ -444,18 +440,6 @@ export const Admin: React.FC = () => {
               />
             </label>
             
-            {unsavedChanges && (
-              <>
-                <Button size="sm" onClick={saveChanges}>
-                  <Save className="h-4 w-4 mr-2" />
-                  Salvar
-                </Button>
-                <Button variant="outline" size="sm" onClick={discardChanges}>
-                  <X className="h-4 w-4 mr-2" />
-                  Descartar
-                </Button>
-              </>
-            )}
           </div>
         </div>
       </div>
@@ -464,21 +448,25 @@ export const Admin: React.FC = () => {
         {/* Sidebar Tree */}
         <div className="w-80 border-r bg-card">
           <ScrollArea className="h-full p-4">
-            <div className="space-y-1">
-              {hierarchy.bigJobs.map(bigJob => (
-                <TreeItem
-                  key={bigJob.id}
-                  type="bigJob"
-                  item={bigJob}
-                  level={0}
-                  onSelect={handleSelect}
-                  onEdit={handleEdit}
-                  onDelete={handleDelete}
-                  onArchive={handleArchive}
-                  selected={selectedEntity?.type === 'bigJob' && selectedEntity.item.id === bigJob.id}
-                />
-              ))}
-            </div>
+            {isLoading ? (
+              <div className="text-center py-8">Carregando...</div>
+            ) : (
+              <div className="space-y-1">
+                {hierarchy?.bigJobs?.map(bigJob => (
+                  <TreeItem
+                    key={bigJob.id}
+                    type="bigJob"
+                    item={bigJob}
+                    level={0}
+                    onSelect={handleSelect}
+                    onEdit={handleEdit}
+                    onDelete={handleDelete}
+                    onArchive={handleArchive}
+                    selected={selectedEntity?.type === 'bigJob' && selectedEntity.item.id === bigJob.id}
+                  />
+                )) || []}
+              </div>
+            )}
           </ScrollArea>
         </div>
 
@@ -569,29 +557,6 @@ export const Admin: React.FC = () => {
                 </CardContent>
               </Card>
               
-              {/* Audit Logs */}
-              <Card>
-                <CardHeader>
-                  <CardTitle>Log de Alterações</CardTitle>
-                </CardHeader>
-                <CardContent>
-                  <ScrollArea className="h-48">
-                    <div className="space-y-2">
-                      {auditLogs.slice(0, 10).map(log => (
-                        <div key={log.id} className="text-sm p-2 border rounded">
-                          <div className="flex items-center justify-between">
-                            <span className="font-medium">{log.action} • {log.entityType}</span>
-                            <span className="text-xs text-muted-foreground">
-                              {new Date(log.timestamp).toLocaleString()}
-                            </span>
-                          </div>
-                          <p className="text-muted-foreground">{log.entityName}</p>
-                        </div>
-                      ))}
-                    </div>
-                  </ScrollArea>
-                </CardContent>
-              </Card>
             </div>
           ) : (
             <div className="flex items-center justify-center h-full">
@@ -626,7 +591,8 @@ export const Admin: React.FC = () => {
               type={showCreateDialog.type}
               onSave={handleSave}
               onCancel={() => setShowCreateDialog(null)}
-              generateId={generateId}
+              generateSlug={generateSlug}
+              isSubmitting={isSubmitting}
             />
           </DialogContent>
         </Dialog>
@@ -647,7 +613,8 @@ export const Admin: React.FC = () => {
               entity={editingEntity.item}
               onSave={handleSave}
               onCancel={() => setEditingEntity(null)}
-              generateId={generateId}
+              generateSlug={generateSlug}
+              isSubmitting={isSubmitting}
             />
           </DialogContent>
         </Dialog>
