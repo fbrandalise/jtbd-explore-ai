@@ -9,9 +9,12 @@ interface RoleGuardProps {
 }
 
 export const RoleGuard = ({ children, requiredRole, fallback }: RoleGuardProps) => {
-  const { hasRole, isLoading } = useAuth();
+  const { hasRole, isLoading, profile } = useAuth();
+
+  console.log('🛡️ RoleGuard:', { requiredRole, isLoading, profile, hasAccess: hasRole(requiredRole) });
 
   if (isLoading) {
+    console.log('⏳ RoleGuard: Still loading...');
     return null; // or loading spinner
   }
 

@@ -24,10 +24,15 @@ export class UsersRepository {
   async getMyProfile(): Promise<{ profile: UserProfile | null; error: any }> {
     try {
       const { data: session } = await supabase.auth.getSession();
+      console.log('🔍 Session data:', session.session?.user?.id, session.session?.user?.email);
+      
       if (!session.session?.user) {
+        console.log('❌ No session found');
         return { profile: null, error: null };
       }
 
+      console.log('🔍 Querying org_members for user:', session.session.user.id);
+      
       const { data, error } = await supabase
         .from('org_members')
         .select(`
@@ -44,8 +49,10 @@ export class UsersRepository {
         .eq('orgs.slug', this.defaultOrgSlug)
         .maybeSingle();
 
+      console.log('🔍 Query result:', { data, error });
+
       if (error || !data) {
-        console.error('Error fetching user profile:', error);
+        console.error('❌ Error fetching user profile:', error);
         return { profile: null, error };
       }
 
@@ -58,8 +65,10 @@ export class UsersRepository {
         created_at: data.created_at
       };
 
+      console.log('✅ Profile loaded successfully:', profile);
       return { profile, error: null };
     } catch (error) {
+      console.error('❌ Exception in getMyProfile:', error);
       return { profile: null, error };
     }
   }

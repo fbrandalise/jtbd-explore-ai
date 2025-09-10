@@ -13,10 +13,12 @@ export const useAuth = () => {
 
   const loadProfile = useCallback(async (userId: string) => {
     try {
+      console.log('🔄 Loading profile for user:', userId);
       const { profile } = await usersRepo.getMyProfile();
+      console.log('🔄 Profile loaded in useAuth:', profile);
       setProfile(profile);
     } catch (error) {
-      console.error('Error loading profile:', error);
+      console.error('❌ Error loading profile in useAuth:', error);
       setProfile(null);
     }
   }, []);
@@ -90,13 +92,27 @@ export const useAuth = () => {
   }, []);
 
   const hasRole = useCallback((requiredRole: 'reader' | 'writer' | 'admin'): boolean => {
-    if (!profile) return false;
+    console.log('🔍 Checking role:', { profile, requiredRole });
+    
+    if (!profile) {
+      console.log('❌ No profile available for role check');
+      return false;
+    }
     
     const roles = ['reader', 'writer', 'admin'];
     const userRoleIndex = roles.indexOf(profile.role);
     const requiredRoleIndex = roles.indexOf(requiredRole);
     
-    return userRoleIndex >= requiredRoleIndex;
+    const hasAccess = userRoleIndex >= requiredRoleIndex;
+    console.log('🔍 Role check result:', { 
+      userRole: profile.role, 
+      requiredRole, 
+      userRoleIndex, 
+      requiredRoleIndex, 
+      hasAccess 
+    });
+    
+    return hasAccess;
   }, [profile]);
 
   return {
