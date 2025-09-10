@@ -128,10 +128,13 @@ serve(async (req) => {
       });
     }
 
+    console.log('Admin verification passed. Checking if user already exists...');
     // Check if user already exists
-    const { data: existingUser } = await supabaseAdmin.auth.admin.listUsers({
+    const { data: existingUser, error: listUsersError } = await supabaseAdmin.auth.admin.listUsers({
       filter: `email.eq.${email}`
     });
+    
+    console.log('User existence check result:', { data: existingUser, error: listUsersError });
     
     let newUser;
     if (existingUser.users && existingUser.users.length > 0) {
