@@ -5,12 +5,12 @@ import { LittleJobCard } from "@/components/LittleJobCard";
 import { OutcomeTable } from "@/components/OutcomeTable";
 import { OpportunityMeter } from "@/components/OpportunityMeter";
 import { Breadcrumb } from "@/components/Breadcrumb";
+import { NavigationHeader } from "@/components/NavigationHeader";
 import { useSupabaseData } from "@/hooks/useSupabaseData";
 import type { SupabaseResearchRound, SupabaseBigJob, SupabaseLittleJob, SupabaseOutcome } from "@/types/supabase";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
-import { Home, Loader2, AlertCircle } from "lucide-react";
-import { Link } from "react-router-dom";
+import { Loader2, AlertCircle } from "lucide-react";
 import { Alert, AlertDescription } from "@/components/ui/alert";
 
 interface NavigationState {
@@ -142,36 +142,9 @@ const Index = () => {
 
   return (
     <div className="min-h-screen bg-background">
-      {/* Header */}
-      <header className="border-b bg-card">
-        <div className="max-w-7xl mx-auto px-6 py-4">
-          <div className="flex items-center justify-between">
-            <div className="flex items-center space-x-6">
-              <Link to="/" className="flex items-center space-x-2">
-                <Home className="h-5 w-5" />
-                <span className="font-medium">JTBD Marketplace Explorer</span>
-              </Link>
-              <nav className="flex space-x-6">
-                <Link to="/analysis" className="text-sm text-muted-foreground hover:text-foreground">
-                  Análise
-                </Link>
-                <Link to="/analytics" className="text-sm text-muted-foreground hover:text-foreground">
-                  Analytics
-                </Link>
-                <Link to="/journey" className="text-sm text-muted-foreground hover:text-foreground">
-                  Jornada
-                </Link>
-                <Link to="/admin" className="text-sm text-muted-foreground hover:text-foreground">
-                  Admin
-                </Link>
-              </nav>
-            </div>
-            <div className="text-sm text-muted-foreground">
-              {selectedResearch.name}
-            </div>
-          </div>
-        </div>
-      </header>
+      <NavigationHeader 
+        title={selectedResearch.name}
+      />
 
       <div className="max-w-7xl mx-auto p-6">
         <div className="flex gap-6">

@@ -1,6 +1,7 @@
 import { useState, useMemo } from 'react';
 import { mockResearchRounds } from '@/data/mockData';
 import { ResearchRound, Outcome, BigJob, LittleJob, getOpportunityLevel } from '@/types/jtbd';
+import { NavigationHeader } from '@/components/NavigationHeader';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
 import { Button } from '@/components/ui/button';
@@ -137,25 +138,20 @@ const Analysis = () => {
 
   return (
     <div className="min-h-screen bg-gradient-subtle">
+      <NavigationHeader 
+        title="Análise ODI"
+        subtitle="Gráfico de Importância vs Satisfação"
+      />
+      
       <div className="container mx-auto p-6 space-y-6">
-        {/* Header */}
-        <div className="flex items-center justify-between">
-          <div className="flex items-center gap-4">
-            <Button variant="ghost" size="sm" asChild>
-              <Link to="/">
-                <ArrowLeft className="h-4 w-4 mr-2" />
-                Voltar
-              </Link>
-            </Button>
-            <div>
-              <h1 className="text-3xl font-bold bg-gradient-primary bg-clip-text text-transparent">
-                Análise ODI
-              </h1>
-              <p className="text-muted-foreground">
-                Gráfico de Importância vs Satisfação
-              </p>
-            </div>
-          </div>
+        {/* Back button */}
+        <div className="flex items-center gap-4">
+          <Button variant="ghost" size="sm" asChild>
+            <Link to="/">
+              <ArrowLeft className="h-4 w-4 mr-2" />
+              Voltar
+            </Link>
+          </Button>
         </div>
 
         <div className="grid grid-cols-1 lg:grid-cols-4 gap-6">

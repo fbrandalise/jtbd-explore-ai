@@ -1,6 +1,7 @@
 import { useState, useMemo } from 'react';
 import { mockResearchRounds } from '@/data/mockData';
 import { ResearchRound, Outcome, BigJob, LittleJob, getOpportunityLevel } from '@/types/jtbd';
+import { NavigationHeader } from '@/components/NavigationHeader';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
 import { Button } from '@/components/ui/button';

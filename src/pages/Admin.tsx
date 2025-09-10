@@ -1,6 +1,6 @@
 import React, { useState } from 'react';
-import { Search, Plus, Save, X, FileDown, FileUp, Archive, Trash2, Edit, MoreVertical, Home } from 'lucide-react';
-import { Link } from 'react-router-dom';
+import { Search, Plus, Save, X, FileDown, FileUp, Archive, Trash2, Edit, MoreVertical } from 'lucide-react';
+import { NavigationHeader } from '@/components/NavigationHeader';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
 import { Textarea } from '@/components/ui/textarea';
@@ -18,9 +18,9 @@ import { Label } from '@/components/ui/label';
 import { Collapsible, CollapsibleContent, CollapsibleTrigger } from '@/components/ui/collapsible';
 import { useSupabaseJTBDAdmin } from '@/hooks/useSupabaseJTBDAdmin';
 import { SupabaseBigJob, SupabaseLittleJob, SupabaseOutcome } from '@/types/supabase';
+import { ChevronDown, ChevronRight } from 'lucide-react';
 
 type EntityType = 'bigJob' | 'littleJob' | 'outcome';
-import { ChevronDown, ChevronRight } from 'lucide-react';
 
 interface TreeItemProps {
   type: EntityType;
@@ -367,22 +367,27 @@ export const Admin: React.FC = () => {
 
   return (
     <div className="h-screen flex flex-col bg-background">
-      {/* Header */}
-      <div className="border-b bg-card">
-        <div className="flex items-center justify-between p-4">
-          <div className="flex items-center gap-4">
-            <Button asChild variant="ghost" size="icon">
-              <Link to="/">
-                <Home className="h-5 w-5" />
-              </Link>
-            </Button>
-            <h1 className="text-2xl font-bold">Administração JTBD</h1>
-            {isLoading && (
+      <NavigationHeader 
+        title="Administração JTBD"
+        subtitle="Gerenciar estrutura hierárquica"
+      />
+      
+      <div className="flex-1 flex overflow-hidden">
+        <div className="flex-1 flex flex-col p-4">
+          {isLoading && (
+            <div className="text-center py-8">
               <Badge variant="secondary">
                 Carregando...
               </Badge>
-            )}
-            {error && (
+            </div>
+          )}
+          {error && (
+            <div className="text-center py-8">
+              <Badge variant="destructive">
+                Erro: {error}
+              </Badge>
+            </div>
+          )}
               <Badge variant="destructive">
                 Erro: {error}
               </Badge>
