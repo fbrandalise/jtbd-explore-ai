@@ -40,13 +40,12 @@ export class UsersRepository {
           role,
           created_at,
           org_id,
-          orgs!inner (
+          orgs (
             slug,
             name
           )
         `)
         .eq('user_id', session.session.user.id)
-        .eq('orgs.slug', this.defaultOrgSlug)
         .maybeSingle();
 
       console.log('🔍 Query result:', { data, error });
