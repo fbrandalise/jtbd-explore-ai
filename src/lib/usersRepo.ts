@@ -60,7 +60,7 @@ export class UsersRepository {
         email: session.session.user.email!,
         role: data.role as 'reader' | 'writer' | 'admin',
         org_id: data.org_id,
-        org_name: data.orgs.name,
+        org_name: data.orgs?.name || 'Default Organization',
         created_at: data.created_at
       };
 
