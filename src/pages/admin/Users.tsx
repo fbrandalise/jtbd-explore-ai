@@ -45,6 +45,14 @@ export const Users: React.FC = () => {
       try {
         setIsLoading(true);
         
+        // Check if user is authenticated
+        const { data: { user }, error: authError } = await supabase.auth.getUser();
+        if (authError || !user) {
+          console.log('User not authenticated, redirecting to login');
+          navigate('/auth/login');
+          return;
+        }
+        
         // First get the default organization
         const { data: org, error: orgError } = await supabase
           .from('orgs')
