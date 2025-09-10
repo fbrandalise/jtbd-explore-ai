@@ -164,9 +164,9 @@ serve(async (req) => {
 
       if (existingMembership) {
         console.log('User is already a member of this organization');
-        return new Response(JSON.stringify({ error: 'User is already a member of this organization' }), {
+        return new Response('User is already a member of this organization', {
           status: 400,
-          headers: { ...corsHeaders, 'Content-Type': 'application/json' },
+          headers: { ...corsHeaders, 'Content-Type': 'text/plain' },
         });
       }
 

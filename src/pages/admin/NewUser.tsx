@@ -104,10 +104,15 @@ export const NewUser: React.FC = () => {
       
       // Handle FunctionsHttpError specifically
       if (error.name === 'FunctionsHttpError') {
-        // For FunctionsHttpError, we need to get the actual response
-        if (error.context?.body) {
-          errorMessage = error.context.body;
-        } else {
+        // Try to get the response text from the error
+        try {
+          const response = await error.context?.res?.text?.();
+          if (response) {
+            errorMessage = response;
+          } else {
+            errorMessage = 'O usuário já é membro desta organização ou ocorreu um erro no servidor.';
+          }
+        } catch {
           errorMessage = 'O usuário já é membro desta organização ou ocorreu um erro no servidor.';
         }
       } else if (error.message) {
