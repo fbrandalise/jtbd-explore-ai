@@ -77,6 +77,8 @@ export const NewUser: React.FC = () => {
         }
       });
 
+      console.log('Function result:', { result, error });
+
       if (error) {
         console.error('Supabase function error:', error);
         throw error;
@@ -94,23 +96,19 @@ export const NewUser: React.FC = () => {
       navigate('/admin/users');
     } catch (error: any) {
       console.error('Error creating user:', error);
-      console.error('Error type:', typeof error);
-      console.error('Error keys:', Object.keys(error));
-      console.error('Error context:', error.context);
-      console.error('Error details:', error.details);
+      console.error('Error name:', error.name);
+      console.error('Error message:', error.message);
       
       // Extract specific error message from the response
       let errorMessage = 'Ocorreu um erro inesperado';
       
-      // Handle FunctionsHttpError from Supabase
-      if (error.context?.body) {
-        try {
-          const parsedError = JSON.parse(error.context.body);
-          if (parsedError.error) {
-            errorMessage = parsedError.error;
-          }
-        } catch (parseError) {
-          console.error('Failed to parse error body:', parseError);
+      // Handle FunctionsHttpError specifically
+      if (error.name === 'FunctionsHttpError') {
+        // For FunctionsHttpError, we need to get the actual response
+        if (error.context?.body) {
+          errorMessage = error.context.body;
+        } else {
+          errorMessage = 'O usuário já é membro desta organização ou ocorreu um erro no servidor.';
         }
       } else if (error.message) {
         errorMessage = error.message;
