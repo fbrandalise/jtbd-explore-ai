@@ -373,26 +373,21 @@ export const Admin: React.FC = () => {
       />
       
       <div className="flex-1 flex overflow-hidden">
-        <div className="flex-1 flex flex-col p-4">
-          {isLoading && (
-            <div className="text-center py-8">
-              <Badge variant="secondary">
-                Carregando...
-              </Badge>
-            </div>
-          )}
-          {error && (
-            <div className="text-center py-8">
-              <Badge variant="destructive">
-                Erro: {error}
-              </Badge>
-            </div>
-          )}
-              <Badge variant="destructive">
-                Erro: {error}
-              </Badge>
-            )}
+      <div className="flex-1 flex flex-col p-4">
+        {isLoading && (
+          <div className="text-center py-8">
+            <Badge variant="secondary">
+              Carregando...
+            </Badge>
           </div>
+        )}
+        {error && (
+          <div className="text-center py-8">
+            <Badge variant="destructive">
+              Erro: {error}
+            </Badge>
+          </div>
+        )}
           
           <div className="flex items-center gap-2">
             <div className="relative">
