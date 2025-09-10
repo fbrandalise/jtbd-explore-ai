@@ -20,6 +20,7 @@ serve(async (req) => {
   }
 
   try {
+    console.log('Creating admin client...');
     // Create admin client with service role
     const supabaseAdmin = createClient(
       Deno.env.get('SUPABASE_URL') ?? '',
@@ -32,6 +33,7 @@ serve(async (req) => {
       }
     );
 
+    console.log('Creating regular client...');
     // Create regular client for current user verification
     const authHeader = req.headers.get('Authorization')!;
     const supabase = createClient(
@@ -44,18 +46,22 @@ serve(async (req) => {
       }
     );
 
+    console.log('Verifying current user...');
     // Verify current user is admin
     const { data: { user } } = await supabase.auth.getUser();
     if (!user) {
+      console.error('No authenticated user found');
       return new Response(JSON.stringify({ error: 'Unauthorized' }), {
         status: 401,
         headers: { ...corsHeaders, 'Content-Type': 'application/json' },
       });
     }
 
+    console.log('Parsing request body...');
     const { email, name, role, orgSlug }: CreateUserRequest = await req.json();
     console.log(`Admin ${user.email} creating user ${email} with role ${role} for org ${orgSlug}`);
 
+    console.log('Looking up organization...');
     // Get organization using admin client
     const { data: org, error: orgError } = await supabaseAdmin
       .from('orgs')
@@ -178,6 +184,11 @@ serve(async (req) => {
 
   } catch (error) {
     console.error('Error in admin-create-user function:', error);
+    console.error('Error details:', {
+      message: error.message,
+      stack: error.stack,
+      name: error.name
+    });
     return new Response(JSON.stringify({ error: error.message }), {
       status: 500,
       headers: { ...corsHeaders, 'Content-Type': 'application/json' },
