@@ -9,7 +9,7 @@ import { Badge } from '@/components/ui/badge';
 import { Separator } from '@/components/ui/separator';
 import { ArrowLeft, Filter, TrendingUp, TrendingDown, Minus } from 'lucide-react';
 import { Link } from 'react-router-dom';
-import { ScatterChart, Scatter, XAxis, YAxis, CartesianGrid, Tooltip, ResponsiveContainer, ReferenceLine, Cell } from 'recharts';
+import { ScatterChart, Scatter, XAxis, YAxis, CartesianGrid, Tooltip, ResponsiveContainer, ReferenceLine, Cell, Line } from 'recharts';
 import { Dialog, DialogContent, DialogHeader, DialogTitle } from '@/components/ui/dialog';
 
 interface OutcomeData extends Outcome {
@@ -297,14 +297,14 @@ const Analysis = () => {
               <CardContent>
                 <div className="h-96">
                   <ResponsiveContainer width="100%" height="100%">
-                    <ScatterChart margin={{ top: 20, right: 20, bottom: 20, left: 20 }}>
+                    <ScatterChart margin={{ top: 20, right: 20, bottom: 40, left: 60 }}>
                       <CartesianGrid strokeDasharray="3 3" />
                       <XAxis 
                         type="number" 
                         dataKey="x" 
                         name="Importância"
                         domain={[0, 10]}
-                        tickCount={6}
+                        ticks={[0, 1, 2, 3, 4, 5, 6, 7, 8, 9, 10]}
                         label={{ value: 'Importância', position: 'insideBottom', offset: -10 }}
                       />
                       <YAxis 
@@ -312,7 +312,7 @@ const Analysis = () => {
                         dataKey="y" 
                         name="Satisfação"
                         domain={[0, 10]}
-                        tickCount={6}
+                        ticks={[0, 1, 2, 3, 4, 5, 6, 7, 8, 9, 10]}
                         label={{ value: 'Satisfação', angle: -90, position: 'insideLeft' }}
                       />
                       
@@ -320,6 +320,18 @@ const Analysis = () => {
                       <ReferenceLine x={6} stroke="hsl(var(--border))" strokeDasharray="5 5" />
                       <ReferenceLine y={5} stroke="hsl(var(--border))" strokeDasharray="5 5" />
                       <ReferenceLine y={7} stroke="hsl(var(--border))" strokeDasharray="5 5" />
+                      
+                      {/* Diagonal Lines */}
+                      <ReferenceLine 
+                        segment={[{ x: 5, y: 0 }, { x: 10, y: 10 }]} 
+                        stroke="black" 
+                        strokeWidth={2}
+                      />
+                      <ReferenceLine 
+                        segment={[{ x: 0, y: 0 }, { x: 10, y: 10 }]} 
+                        stroke="black" 
+                        strokeWidth={2}
+                      />
                       
                       <Tooltip content={<CustomTooltip />} />
                       
