@@ -138,22 +138,29 @@ serve(async (req) => {
     
     let newUser;
     if (existingUser.users && existingUser.users.length > 0) {
+      console.log('User already exists, checking membership...');
       // User exists, check if already member of org
       const existingUserData = existingUser.users[0];
-      const { data: existingMembership } = await supabaseAdmin
+      console.log('Existing user data:', { id: existingUserData.id, email: existingUserData.email });
+      
+      const { data: existingMembership, error: membershipCheckError } = await supabaseAdmin
         .from('org_members')
         .select('*')
         .eq('org_id', org.id)
         .eq('user_id', existingUserData.id)
         .single();
 
+      console.log('Existing membership check:', { data: existingMembership, error: membershipCheckError });
+
       if (existingMembership) {
+        console.log('User is already a member of this organization');
         return new Response(JSON.stringify({ error: 'User is already a member of this organization' }), {
           status: 400,
           headers: { ...corsHeaders, 'Content-Type': 'application/json' },
         });
       }
 
+      console.log('User exists but is not a member, will add to org');
       newUser = existingUserData;
     } else {
       // Create new user with invite
