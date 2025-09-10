@@ -42,9 +42,12 @@ export class UsersRepository {
         `)
         .eq('user_id', session.session.user.id)
         .eq('orgs.slug', this.defaultOrgSlug)
-        .single();
+        .maybeSingle();
 
-      if (error) return { profile: null, error };
+      if (error || !data) {
+        console.error('Error fetching user profile:', error);
+        return { profile: null, error };
+      }
 
       const profile: UserProfile = {
         id: session.session.user.id,
