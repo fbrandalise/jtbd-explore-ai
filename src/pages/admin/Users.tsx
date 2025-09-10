@@ -11,6 +11,7 @@ import { AlertDialog, AlertDialogAction, AlertDialogCancel, AlertDialogContent, 
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
 import { Search, Plus, MoreVertical, Edit, Trash2, Mail, Shield, Users as UsersIcon, Eye } from 'lucide-react';
 import { useSupabaseData } from '@/hooks/useSupabaseData';
+import { supabase } from '@/integrations/supabase/client';
 import { useToast } from '@/hooks/use-toast';
 
 interface OrgMember {
@@ -22,16 +23,104 @@ interface OrgMember {
   user_name?: string;
 }
 
+interface AuthUser {
+  id: string;
+  email: string;
+  user_metadata?: {
+    full_name?: string;
+  };
+}
+
 export const Users: React.FC = () => {
   const navigate = useNavigate();
   const { toast } = useToast();
   const [searchTerm, setSearchTerm] = useState('');
   const [roleFilter, setRoleFilter] = useState<'all' | 'reader' | 'writer' | 'admin'>('all');
+  const [members, setMembers] = useState<OrgMember[]>([]);
+  const [isLoading, setIsLoading] = useState(true);
 
-  // Simulate fetching org members - in real app this would be from a hook
-  // Mock data for now - replace with real Supabase query
-  const members: OrgMember[] = [];
-  const isLoading = false;
+  // Fetch organization members
+  React.useEffect(() => {
+    const fetchMembers = async () => {
+      try {
+        setIsLoading(true);
+        
+        // First get the default organization
+        const { data: org, error: orgError } = await supabase
+          .from('orgs')
+          .select('id')
+          .eq('slug', 'default')
+          .single();
+
+        if (orgError || !org) {
+          console.error('Error fetching organization:', orgError);
+          return;
+        }
+
+        // Get org members
+        const { data: orgMembers, error: membersError } = await supabase
+          .from('org_members')
+          .select('*')
+          .eq('org_id', org.id);
+
+        if (membersError) {
+          console.error('Error fetching org members:', membersError);
+          return;
+        }
+
+        if (!orgMembers?.length) {
+          setMembers([]);
+          return;
+        }
+
+        // Get user details from auth.users using admin client
+        const { data: users, error: usersError } = await supabase.functions.invoke('get-users', {
+          body: { userIds: orgMembers.map(m => m.user_id) }
+        });
+
+        if (usersError) {
+          console.error('Error fetching users:', usersError);
+          // Fallback: show members without user details
+          const membersData: OrgMember[] = orgMembers.map(member => ({
+            id: member.id,
+            user_id: member.user_id,
+            role: member.role as 'reader' | 'writer' | 'admin',
+            created_at: member.created_at,
+            user_email: 'Email não disponível',
+            user_name: 'Nome não disponível'
+          }));
+          setMembers(membersData);
+          return;
+        }
+
+        // Combine org members with user details
+        const membersWithDetails: OrgMember[] = orgMembers.map(member => {
+          const user = users?.users?.find((u: AuthUser) => u.id === member.user_id);
+          return {
+            id: member.id,
+            user_id: member.user_id,
+            role: member.role as 'reader' | 'writer' | 'admin',
+            created_at: member.created_at,
+            user_email: user?.email || 'Email não disponível',
+            user_name: user?.user_metadata?.full_name || user?.email || 'Nome não disponível'
+          };
+        });
+
+        setMembers(membersWithDetails);
+      } catch (error) {
+        console.error('Error in fetchMembers:', error);
+        toast({
+          title: 'Erro ao carregar usuários',
+          description: 'Ocorreu um erro ao carregar a lista de usuários.',
+          variant: 'destructive'
+        });
+      } finally {
+        setIsLoading(false);
+      }
+    };
+
+    fetchMembers();
+  }, [toast]);
 
   const getRoleBadgeVariant = (role: string) => {
     switch (role) {
