@@ -88,12 +88,16 @@ serve(async (req) => {
     console.log(`Admin ${user.email} creating user ${email} with role ${role} for org ${orgSlug}`);
 
     console.log('Looking up organization...');
+    console.log('Querying orgs table for slug:', orgSlug);
+    
     // Get organization using admin client
     const { data: org, error: orgError } = await supabaseAdmin
       .from('orgs')
       .select('id')
       .eq('slug', orgSlug)
       .single();
+
+    console.log('Organization query result:', { data: org, error: orgError });
 
     if (orgError || !org) {
       console.error('Organization not found:', orgError);
@@ -102,6 +106,8 @@ serve(async (req) => {
         headers: { ...corsHeaders, 'Content-Type': 'application/json' },
       });
     }
+
+    console.log('Organization found:', org);
 
     // Verify current user is admin of this org
     const { data: membership } = await supabaseAdmin
