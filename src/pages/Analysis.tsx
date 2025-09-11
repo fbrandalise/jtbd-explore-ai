@@ -373,7 +373,7 @@ const Analysis = () => {
                   <div 
                     className="absolute top-5 left-16 right-5 bottom-10 pointer-events-none"
                     style={{
-                      background: 'rgba(234, 179, 8, 0.08)',
+                      background: 'rgba(199, 253, 5)',
                       clipPath: 'polygon(0% 100%, 50% 0%, 100% 0%, 100% 100%)'
                     }}
                   />
