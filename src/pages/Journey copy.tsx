@@ -239,10 +239,10 @@ const Journey = () => {
             });
           }
           
-    /*      littleJobY += Math.max(littleJobSpacing, 
+          littleJobY += Math.max(littleJobSpacing, 
             expandedLittleJobs.has(littleJobId) ? 
               littleJob.outcomes.length * outcomeSpacing : littleJobSpacing
-          );*/
+          );
           littleJobX += Math.max(littleJobSpacing, 
             expandedLittleJobs.has(littleJobId) ? 
               littleJob.outcomes.length * outcomeSpacing : littleJobSpacing
