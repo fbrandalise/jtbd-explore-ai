@@ -369,12 +369,24 @@ const Analysis = () => {
                     }}
                   />
                   
+                  {/* Well served area (yellow) */}
+                  <div 
+                    className="absolute top-5 left-16 right-5 bottom-10 pointer-events-none"
+                    style={{
+                      background: 'rgba(234, 179, 8, 0.08)',
+                      clipPath: 'polygon(0% 100%, 100% 0%, 100% 100%)'
+                    }}
+                  />
+                  
                   {/* Labels */}
                   <div className="absolute bottom-20 right-8 text-xs text-red-500/70 font-medium pointer-events-none">
                     Underserved
                   </div>
                   <div className="absolute top-8 left-32 text-xs text-green-500/70 font-medium pointer-events-none">
                     Overserved
+                  </div>
+                  <div className="absolute top-20 left-28 text-xs text-yellow-600/70 font-medium pointer-events-none">
+                    Well served
                   </div>
                 </div>
                 
