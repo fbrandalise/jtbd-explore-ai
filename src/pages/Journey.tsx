@@ -134,8 +134,7 @@ const Journey = () => {
     const newEdges: Edge[] = [];
     
     let yOffset = 0;
-    //const bigJobSpacing = 300;
-    const bigJobSpacing = 100;
+    const bigJobSpacing = 300;
     const littleJobSpacing = 200;
     const outcomeSpacing = 150;
 
@@ -158,8 +157,7 @@ const Journey = () => {
         //position: { x: 0, y: bigJobY },
         position: { x: 0, y: bigJobY },
         data: {
-         // label: bigJob.name,
-         label: "Teste",
+          label: bigJob.name,
           description: bigJob.description,
           count: bigJob.littleJobs.length,
           bigJobId: bigJob.id
@@ -177,6 +175,7 @@ const Journey = () => {
             id: littleJobId,
             type: 'littleJob',
             position: { x: 300, y: littleJobY },
+            console.log('littleJobY', littleJobY);
             data: {
               label: littleJob.name,
               description: littleJob.description,
