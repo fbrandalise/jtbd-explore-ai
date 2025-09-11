@@ -374,7 +374,7 @@ const Analysis = () => {
                     className="absolute top-5 left-16 right-5 bottom-10 pointer-events-none"
                     style={{
                       background: 'rgba(199, 253, 5)',
-                      clipPath: 'polygon(0% 0%, 100% 0%, 0% 100%)'
+                      clipPath: 'polygon(0% 100%, 0% 100%, 0% 100%)'
                     }}
                   />
                   
