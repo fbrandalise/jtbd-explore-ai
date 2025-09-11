@@ -134,6 +134,7 @@ const Journey = () => {
     const newEdges: Edge[] = [];
     
     let yOffset = 0;
+    let xOffset = 0;
     const bigJobSpacing = 300;
     const littleJobSpacing = 200;
     const outcomeSpacing = 150;
@@ -149,12 +150,14 @@ const Journey = () => {
           )) return;
 
       const bigJobY = yOffset;
+      const bigJobX = xOffset;
       
       // Big Job Node
       newNodes.push({
         id: `big-${bigJob.id}`,
         type: 'bigJob',
-        position: { x: 0, y: bigJobY },
+        //position: { x: 0, y: bigJobY },
+        position: { x: bigJobX, y: bigJobY },
         data: {
           label: bigJob.name,
           description: bigJob.description,
@@ -165,7 +168,7 @@ const Journey = () => {
 
       if (expandedBigJobs.has(bigJob.id)) {
         let littleJobY = bigJobY;
-
+        let littleJobX = bigJobX;
         bigJob.littleJobs.forEach((littleJob, littleJobIndex) => {
           const littleJobId = `little-${bigJob.id}-${littleJob.id}`;
           
@@ -195,6 +198,7 @@ const Journey = () => {
 
           if (expandedLittleJobs.has(littleJobId)) {
             let outcomeY = littleJobY;
+            let outcomeX = littleJobX;
             
             littleJob.outcomes.forEach((outcome, outcomeIndex) => {
               // Filter by opportunity score
@@ -239,11 +243,16 @@ const Journey = () => {
             expandedLittleJobs.has(littleJobId) ? 
               littleJob.outcomes.length * outcomeSpacing : littleJobSpacing
           );
+          littleJobX += Math.max(littleJobSpacing, 
+            expandedLittleJobs.has(littleJobId) ? 
+              littleJob.outcomes.length * outcomeSpacing : littleJobSpacing
+          );
         });
-        
+        xOffset = Math.max(xOffset + bigJobSpacing, littleJobX);
         yOffset = Math.max(yOffset + bigJobSpacing, littleJobY);
       } else {
         yOffset += bigJobSpacing;
+        xOffset += bigJobSpacing;
       }
     });
 
