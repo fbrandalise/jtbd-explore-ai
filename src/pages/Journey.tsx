@@ -238,7 +238,7 @@ const Journey = () => {
               outcomeY += outcomeSpacing;
             });
           }
-          
+
     /*      littleJobY += Math.max(littleJobSpacing, 
             expandedLittleJobs.has(littleJobId) ? 
               littleJob.outcomes.length * outcomeSpacing : littleJobSpacing
@@ -249,9 +249,9 @@ const Journey = () => {
           );
         });
         xOffset = Math.max(xOffset + bigJobSpacing, littleJobX);
-        yOffset = Math.max(yOffset + bigJobSpacing, littleJobY);
+    //    yOffset = Math.max(yOffset + bigJobSpacing, littleJobY);
       } else {
-        yOffset += bigJobSpacing;
+     //   yOffset += bigJobSpacing;
         xOffset += bigJobSpacing;
       }
     });
