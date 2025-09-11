@@ -175,7 +175,7 @@ const Journey = () => {
             id: littleJobId,
             type: 'littleJob',
             position: { x: 300, y: littleJobY },
-            console.log('littleJobY', littleJobY);
+            console.log('littleJobY', littleJobY),
             data: {
               label: littleJob.name,
               description: littleJob.description,
