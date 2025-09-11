@@ -166,7 +166,8 @@ const Journey = () => {
 
       if (expandedBigJobs.has(bigJob.id)) {
         let littleJobY = bigJobY;
-        
+        console.log('littleJobY', littleJobY),
+        console.log('bigJobY', bigJobY),
         bigJob.littleJobs.forEach((littleJob, littleJobIndex) => {
           const littleJobId = `little-${bigJob.id}-${littleJob.id}`;
           
@@ -174,8 +175,9 @@ const Journey = () => {
           newNodes.push({
             id: littleJobId,
             type: 'littleJob',
+            
             position: { x: 300, y: littleJobY },
-            console.log('littleJobY', littleJobY),
+            
             data: {
               label: littleJob.name,
               description: littleJob.description,
