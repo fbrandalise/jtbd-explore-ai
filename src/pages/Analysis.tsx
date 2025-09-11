@@ -355,7 +355,7 @@ const Analysis = () => {
                   <div 
                     className="absolute top-5 left-16 right-5 bottom-10 pointer-events-none"
                     style={{
-                      background: 'linear-gradient(135deg, transparent 50%, rgba(239, 68, 68, 0.25) 50%)',
+                      background: 'linear-gradient(135deg, transparent 50%, rgba(255, 0, 0, 0.25) 50%)',
                       clipPath: 'polygon(50% 100%, 100% 0%, 100% 100%)'
                     }}
                   />
@@ -364,7 +364,7 @@ const Analysis = () => {
                   <div 
                     className="absolute top-5 left-16 right-5 bottom-10 pointer-events-none"
                     style={{
-                      background: 'linear-gradient(135deg, rgba(34, 197, 94, 0.25) 100%, transparent 0%)',
+                      background: 'linear-gradient(135deg, rgba(0, 255, 94, 0.25) 100%, transparent 0%)',
                       clipPath: 'polygon(0% 0%, 100% 0%, 0% 100%)'
                     }}
                   />
@@ -374,7 +374,7 @@ const Analysis = () => {
                     className="absolute top-5 left-16 right-5 bottom-10 pointer-events-none"
                     style={{
                       clipPath: 'polygon(0% 100%, 50% 100%, 100% 0%)',
-                      background: 'linear-gradient(135deg, rgba(199, 253, 5, 0.25) 100%, transparent 0%)',
+                      background: 'linear-gradient(135deg, rgba(200, 255, 0, 0.25) 100%, transparent 0%)',
                       pointer: 'none',
                       position: 'absolute; inset: 0',
   
