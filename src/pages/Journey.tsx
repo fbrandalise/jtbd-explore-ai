@@ -215,6 +215,7 @@ const Journey = () => {
                 type: 'outcome',
                 position: { x: 600, y: outcomeY },
                 data: {
+                  dragging: false,
                   label: outcome.name,
                   description: outcome.description,
                   importance: outcome.importance,
