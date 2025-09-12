@@ -289,7 +289,7 @@ const Journey = () => {
           //console.log('Expanding Big Job:', bigJobId);
           newSet.add(bigJobId);
         }
-        console.log('New Expanded Big Jobs:', newSet);
+        console.log('New Expanded Big Jobss:', newSet); 
         return newSet;
       });
     } else if (node.type === 'littleJob') {
