@@ -271,6 +271,7 @@ const Journey = () => {
     if (node.type === 'bigJob') {
       const bigJobId = node.data.bigJobId;
       setExpandedBigJobs(prev => {
+        console.log('Toggling Big Job:', prev);
         const newSet = new Set(prev);
         if (newSet.has(bigJobId)) {
           newSet.delete(bigJobId);
