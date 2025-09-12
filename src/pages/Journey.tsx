@@ -196,6 +196,8 @@ const Journey = () => {
             target: littleJobId,
             type: 'smoothstep',
             sourcePosition: Position.Bottom,
+            targetPosition: Position.Top,
+            
             label:"teste",
             style: { stroke: 'hsl(var(--primary))' },
             markerEnd: {
