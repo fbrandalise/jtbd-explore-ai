@@ -266,6 +266,15 @@ const Journey = () => {
     setEdges(newEdges);
   }, [generateLayout, setNodes, setEdges]);
 
+  const initialNodes = [
+  {
+    id: '0',
+    type: 'input',
+    data: { label: 'Node' },
+    position: { x: 0, y: 50 },
+  },
+];
+
   // Handle node clicks
   const onNodeClick = useCallback((event: any, node: Node) => {
     if (node.type === 'bigJob') {
@@ -300,6 +309,7 @@ const Journey = () => {
           newSet.delete(littleJobId);
         } else {
           newSet.add(littleJobId);
+          newSet.add(initialNodes);
         }
         return newSet;
       });
