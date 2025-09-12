@@ -159,8 +159,6 @@ const Journey = () => {
         type: 'bigJob',
         //position: { x: 0, y: bigJobY },
         position: { x: bigJobX, y: bigJobY },
-        dragging: false,
-        draggable: false,
         data: {
           label: bigJob.name,
           description: bigJob.description,
