@@ -195,7 +195,13 @@ const Journey = () => {
             id: `edge-big-${bigJob.id}-little-${littleJob.id}`,
             source: `big-${bigJob.id}`,
             target: littleJobId,
-            type: 'smoothstep'
+            type: 'smoothstep',
+            markerEnd: {
+              type: MarkerType.ArrowClosed, // seta fechada
+              color: '#FF0072',             // cor da seta
+              width: 20,                    // largura
+              height: 20,                   // altura
+            },
           });
 
           if (expandedLittleJobs.has(littleJobId)) {
