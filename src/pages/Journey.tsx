@@ -195,6 +195,7 @@ const Journey = () => {
             source: `big-${bigJob.id}`,
             target: littleJobId,
             type: 'smoothstep',
+            sourcePosition: Position.Bottom,
             markerEnd: {
               type: MarkerType.ArrowClosed, // seta fechada
               color: '#FF0072',             // cor da seta
