@@ -285,7 +285,8 @@ const Journey = () => {
             return newLittleSet;
           });
         } else {
-          //newSet.add(bigJobId);
+          console.log('Expanding Big Job:', bigJobId);
+          newSet.add(bigJobId);
         }
         return newSet;
       });
