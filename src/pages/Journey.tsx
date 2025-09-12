@@ -196,6 +196,8 @@ const Journey = () => {
             target: littleJobId,
             type: 'smoothstep',
             sourcePosition: Position.Bottom,
+            label:"teste",
+            style: { stroke: 'hsl(var(--primary))' },
             markerEnd: {
               type: MarkerType.ArrowClosed, // seta fechada
               color: '#FF0072',             // cor da seta
