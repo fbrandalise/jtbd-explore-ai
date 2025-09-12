@@ -11,6 +11,7 @@ import ReactFlow, {
   type Edge,
   Handle,
   Position,
+  MarkerType,
 } from 'reactflow';
 import 'reactflow/dist/style.css';
 import { mockResearchRounds } from '../data/mockData';
