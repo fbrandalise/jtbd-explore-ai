@@ -29,11 +29,11 @@ import { ArrowLeft, Search, Filter, TrendingUp, BarChart3, Maximize2, Download }
 // Custom node components
 const BigJobNode = ({ data }: { data: any }) => (
   <div className="bg-card border-2 border-primary/20 rounded-lg p-4 min-w-[200px] cursor-pointer hover:shadow-lg transition-shadow">
-    <Handle type="target" position={Position.Left} style={{ background: 'transparent' }} />
+    <Handle type="target" position={Position.Bottom} style={{ background: 'transparent' }} />
     <div className="text-sm font-semibold text-primary">{data.label}</div>
     <div className="text-xs text-muted-foreground mt-1">{data.description}</div>
     <Badge variant="outline" className="mt-2">{data.count} Little Jobs</Badge>
-    <Handle type="source" position={Position.Right} style={{ background: 'hsl(var(--primary))' }} />
+    <Handle type="source" position={Position.Bottom} style={{ background: 'hsl(var(--primary))' }} />
   </div>
 );
 
@@ -86,11 +86,7 @@ const OutcomeNode = ({ data }: { data: any }) => {
   );
 };
 
-const nodeTypes = {
-  bigJob: BigJobNode,
-  littleJob: LittleJobNode,
-  outcome: OutcomeNode,
-};
+
 
 const Journey = () => {
   const [searchParams, setSearchParams] = useSearchParams();
@@ -197,11 +193,6 @@ const Journey = () => {
             type: 'smoothstep',
             sourcePosition: Position.Bottom,
             targetPosition: Position.Top,
-            sourceX: '300',	
-            sourceY:	'300',	
-            targetX:	'300',	
-            targetY: '300',
-            label:"teste",
             style: { stroke: 'hsl(var(--primary))' },
             markerEnd: {
               type: MarkerType.ArrowClosed, // seta fechada
