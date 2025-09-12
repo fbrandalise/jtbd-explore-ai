@@ -285,7 +285,7 @@ const Journey = () => {
             return newLittleSet;
           });
         } else {
-          newSet.add(bigJobId);
+          //newSet.add(bigJobId);
         }
         return newSet;
       });
