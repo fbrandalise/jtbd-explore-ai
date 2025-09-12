@@ -159,6 +159,7 @@ const Journey = () => {
         //position: { x: 0, y: bigJobY },
         position: { x: bigJobX, y: bigJobY },
         data: {
+          dragging: false,
           label: bigJob.name,
           description: bigJob.description,
           count: bigJob.littleJobs.length,
@@ -215,7 +216,7 @@ const Journey = () => {
                 type: 'outcome',
                 position: { x: 600, y: outcomeY },
                 data: {
-                  dragging: false,
+                  
                   label: outcome.name,
                   description: outcome.description,
                   importance: outcome.importance,
