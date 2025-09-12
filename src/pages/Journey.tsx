@@ -271,7 +271,7 @@ const Journey = () => {
     if (node.type === 'bigJob') {
       const bigJobId = node.data.bigJobId;
       setExpandedBigJobs(prev => {
-        console.log('Toggling Big Job:', prev);
+        //console.log('Toggling Big Job:', prev);
         const newSet = new Set(prev);
         if (newSet.has(bigJobId)) {
           newSet.delete(bigJobId);
@@ -286,9 +286,10 @@ const Journey = () => {
             return newLittleSet;
           });
         } else {
-          console.log('Expanding Big Job:', bigJobId);
+          //console.log('Expanding Big Job:', bigJobId);
           newSet.add(bigJobId);
         }
+        console.log('New Expanded Big Jobs:', newSet);
         return newSet;
       });
     } else if (node.type === 'littleJob') {
