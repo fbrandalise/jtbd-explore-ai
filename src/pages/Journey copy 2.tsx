@@ -11,6 +11,7 @@ import ReactFlow, {
   type Edge,
   Handle,
   Position,
+  MarkerType,
 } from 'reactflow';
 import 'reactflow/dist/style.css';
 import { mockResearchRounds } from '../data/mockData';
@@ -28,11 +29,11 @@ import { ArrowLeft, Search, Filter, TrendingUp, BarChart3, Maximize2, Download }
 // Custom node components
 const BigJobNode = ({ data }: { data: any }) => (
   <div className="bg-card border-2 border-primary/20 rounded-lg p-4 min-w-[200px] cursor-pointer hover:shadow-lg transition-shadow">
-    <Handle type="target" position={Position.Left} style={{ background: 'transparent' }} />
+    <Handle type="target" position={Position.Bottom} style={{ background: 'transparent' }} />
     <div className="text-sm font-semibold text-primary">{data.label}</div>
     <div className="text-xs text-muted-foreground mt-1">{data.description}</div>
     <Badge variant="outline" className="mt-2">{data.count} Little Jobs</Badge>
-    <Handle type="source" position={Position.Right} style={{ background: 'hsl(var(--primary))' }} />
+    <Handle type="source" position={Position.Bottom} style={{ background: 'hsl(var(--primary))' }} />
   </div>
 );
 
@@ -85,11 +86,7 @@ const OutcomeNode = ({ data }: { data: any }) => {
   );
 };
 
-const nodeTypes = {
-  bigJob: BigJobNode,
-  littleJob: LittleJobNode,
-  outcome: OutcomeNode,
-};
+
 
 const Journey = () => {
   const [searchParams, setSearchParams] = useSearchParams();
@@ -193,7 +190,16 @@ const Journey = () => {
             id: `edge-big-${bigJob.id}-little-${littleJob.id}`,
             source: `big-${bigJob.id}`,
             target: littleJobId,
-            type: 'smoothstep'
+            type: 'smoothstep',
+            sourcePosition: Position.Bottom,
+            targetPosition: Position.Top,
+            style: { stroke: 'hsl(var(--primary))' },
+            markerEnd: {
+              type: MarkerType.ArrowClosed, // seta fechada
+              color: '#FF0072',             // cor da seta
+              width: 20,                    // largura
+              height: 20,                   // altura
+            },
           });
 
           if (expandedLittleJobs.has(littleJobId)) {
@@ -215,6 +221,7 @@ const Journey = () => {
                 type: 'outcome',
                 position: { x: 600, y: outcomeY },
                 data: {
+                  
                   label: outcome.name,
                   description: outcome.description,
                   importance: outcome.importance,
@@ -229,6 +236,7 @@ const Journey = () => {
 
               // Edge from Little Job to Outcome
               newEdges.push({
+                
                 id: `edge-little-${littleJob.id}-outcome-${outcome.id}`,
                 source: littleJobId,
                 target: outcomeId,
@@ -238,20 +246,20 @@ const Journey = () => {
               outcomeY += outcomeSpacing;
             });
           }
-          
-          littleJobY += Math.max(littleJobSpacing, 
+
+    /*      littleJobY += Math.max(littleJobSpacing, 
             expandedLittleJobs.has(littleJobId) ? 
               littleJob.outcomes.length * outcomeSpacing : littleJobSpacing
-          );
+          );*/
           littleJobX += Math.max(littleJobSpacing, 
             expandedLittleJobs.has(littleJobId) ? 
               littleJob.outcomes.length * outcomeSpacing : littleJobSpacing
           );
         });
         xOffset = Math.max(xOffset + bigJobSpacing, littleJobX);
-        yOffset = Math.max(yOffset + bigJobSpacing, littleJobY);
+    //    yOffset = Math.max(yOffset + bigJobSpacing, littleJobY);
       } else {
-        yOffset += bigJobSpacing;
+     //   yOffset += bigJobSpacing;
         xOffset += bigJobSpacing;
       }
     });
@@ -266,11 +274,21 @@ const Journey = () => {
     setEdges(newEdges);
   }, [generateLayout, setNodes, setEdges]);
 
+  const initialNodes = [
+  {
+    id: '0',
+    type: 'input',
+    data: { label: 'Node' },
+    position: { x: 0, y: 50 },
+  },
+];
+
   // Handle node clicks
   const onNodeClick = useCallback((event: any, node: Node) => {
     if (node.type === 'bigJob') {
       const bigJobId = node.data.bigJobId;
       setExpandedBigJobs(prev => {
+        //console.log('Toggling Big Job:', prev);
         const newSet = new Set(prev);
         if (newSet.has(bigJobId)) {
           newSet.delete(bigJobId);
@@ -285,8 +303,10 @@ const Journey = () => {
             return newLittleSet;
           });
         } else {
+          //console.log('Expanding Big Job:', bigJobId);
           newSet.add(bigJobId);
         }
+        console.log('New Expanded Big Jobss:', newSet); 
         return newSet;
       });
     } else if (node.type === 'littleJob') {
@@ -297,6 +317,7 @@ const Journey = () => {
           newSet.delete(littleJobId);
         } else {
           newSet.add(littleJobId);
+          newSet.add(initialNodes);
         }
         return newSet;
       });
