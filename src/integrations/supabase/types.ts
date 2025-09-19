@@ -347,6 +347,10 @@ export type Database = {
         Args: { org: string; required_role: string }
         Returns: boolean
       }
+      rpc_import_survey: {
+        Args: { payload: Json }
+        Returns: Json
+      }
     }
     Enums: {
       [_ in never]: never

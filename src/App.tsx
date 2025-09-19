@@ -10,6 +10,7 @@ import Journey from "./pages/Journey";
 import Admin from "./pages/Admin";
 import Users from "./pages/admin/Users";
 import NewUser from "./pages/admin/NewUser";
+import ImportSurvey from "./pages/admin/ImportSurvey";
 import NotFound from "./pages/NotFound";
 import Login from "./pages/auth/Login";
 import Register from "./pages/auth/Register";
@@ -56,6 +57,13 @@ const App = () => (
             <ProtectedRoute>
               <RoleGuard requiredRole="admin">
                 <NewUser />
+              </RoleGuard>
+            </ProtectedRoute>
+          } />
+          <Route path="/admin/import" element={
+            <ProtectedRoute>
+              <RoleGuard requiredRole="writer">
+                <ImportSurvey />
               </RoleGuard>
             </ProtectedRoute>
           } />
