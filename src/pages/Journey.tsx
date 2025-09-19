@@ -236,6 +236,7 @@ const Journey = () => {
 
               // Edge from Little Job to Outcome
               newEdges.push({
+                
                 id: `edge-little-${littleJob.id}-outcome-${outcome.id}`,
                 source: littleJobId,
                 target: outcomeId,
