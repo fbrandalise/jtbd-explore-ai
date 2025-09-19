@@ -372,11 +372,12 @@ const Analysis = () => {
                   {/* Well served area (yellow) */}
                   <div 
                     className="absolute top-5 left-16 right-5 bottom-10 pointer-events-none"
-                    style={{
-                      clipPath: 'polygon(0% 100%, 50% 100%, 100% 0%)',
-                      background: 'linear-gradient(135deg, rgba(200, 255, 0, 0.25) 100%, transparent 0%)',
-                      pointer: 'none',
-                      position: 'absolute; inset: 0',
+                     style={{
+                       clipPath: 'polygon(0% 100%, 50% 100%, 100% 0%)',
+                       background: 'linear-gradient(135deg, rgba(200, 255, 0, 0.25) 100%, transparent 0%)',
+                       pointerEvents: 'none',
+                       position: 'absolute',
+                       inset: 0,
   
 
                     }}

@@ -88,6 +88,12 @@ const OutcomeNode = ({ data }: { data: any }) => {
 
 
 
+const nodeTypes = {
+  bigJob: BigJobNode,
+  littleJob: LittleJobNode,
+  outcome: OutcomeNode,
+};
+
 const Journey = () => {
   const [searchParams, setSearchParams] = useSearchParams();
   const [selectedRound, setSelectedRound] = useState(searchParams.get('round') || '2025');
@@ -191,8 +197,6 @@ const Journey = () => {
             source: `big-${bigJob.id}`,
             target: littleJobId,
             type: 'smoothstep',
-            sourcePosition: Position.Bottom,
-            targetPosition: Position.Top,
             style: { stroke: 'hsl(var(--primary))' },
             markerEnd: {
               type: MarkerType.ArrowClosed, // seta fechada
@@ -317,7 +321,7 @@ const Journey = () => {
           newSet.delete(littleJobId);
         } else {
           newSet.add(littleJobId);
-          newSet.add(initialNodes);
+          // newSet.add(initialNodes);
         }
         return newSet;
       });
